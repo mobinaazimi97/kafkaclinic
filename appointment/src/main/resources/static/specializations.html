@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Specializations Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.light { background: #ffffff; color: #000000; }
+        body.dark { background: #121212; color: #ffffff; }
+        .rtl { direction: rtl; text-align: right; }
+        .ltr { direction: ltr; text-align: left; }
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 5px; }
+        button { margin-top: 10px; padding: 8px 12px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body class="light ltr">
+<div class="container">
+    <h1 id="title">Specializations Management</h1>
+
+    <div>
+        <button onclick="toggleLang()">🌐 Switch Language</button>
+        <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+    </div>
+
+    <h2 id="addTitle">Add Specialization</h2>
+    <form id="specializationForm">
+        <label id="skillLabel">Skill Name:</label>
+        <input type="text" id="skillName" required>
+
+        <label id="descLabel">Description:</label>
+        <textarea id="description"></textarea>
+
+        <label id="docIdLabel">Doctor ID (UUID):</label>
+        <input type="text" id="doctorId">
+
+        <button type="submit" id="saveBtn">Save</button>
+    </form>
+
+
+    <h2 id="listTitle">Specializations List</h2>
+    <button onclick="loadAll()">🔄 Refresh</button>
+    <table id="specTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>UUID</th>
+            <th>Skill</th>
+            <th>Description</th>
+            <th>Doctor ID</th>
+            <th>Doctor Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const apiBase = "https://localhost:8443/specializations";
+    let currentLang = "en";
+
+    function toggleLang() {
+        currentLang = currentLang === "en" ? "fa" : "en";
+        document.body.classList.toggle("rtl", currentLang === "fa");
+        document.body.classList.toggle("ltr", currentLang === "en");
+        const texts = {
+            en: {
+                title: "Specializations Management",
+                addTitle: "Add Specialization",
+                skillLabel: "Skill Name:",
+                descLabel: "Description:",
+                docIdLabel: "Doctor ID (UUID):",
+                saveBtn: "Save",
+                listTitle: "Specializations List"
+            },
+            fa: {
+                title: "مدیریت تخصص‌ها",
+                addTitle: "افزودن تخصص",
+                skillLabel: "نام مهارت:",
+                descLabel: "توضیحات:",
+                docIdLabel: "شناسه دکتر (UUID):",
+                saveBtn: "ذخیره",
+                listTitle: "لیست تخصص‌ها"
+            }
+        };
+        for (const key in texts[currentLang]) {
+            document.getElementById(key).textContent = texts[currentLang][key];
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("light");
+        document.body.classList.toggle("dark");
+    }
+
+    document.getElementById("specializationForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = {
+            skillName: document.getElementById("skillName").value,
+            description: document.getElementById("description").value,
+            doctorId: document.getElementById("doctorId").value || null
+        };
+        await fetch(apiBase, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+        loadAll();
+    });
+
+    async function loadAll() {
+        const res = await fetch(apiBase);
+        const data = await res.json();
+        const tbody = document.querySelector("#specTable tbody");
+        tbody.innerHTML = "";
+        data.forEach(s => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${s.specializationId || "-"}</td>
+            <td>${s.specializationUuid || "-"}</td>
+            <td>${s.skillName || ""}</td>
+            <td>${s.description || ""}</td>
+            <td>${s.doctorId || ""}</td>
+            <td>${(s.doctorFirstName || "") + " " + (s.doctorLastName || "")}</td>
+            <td>
+                <button onclick="deleteSpec('${s.specializationUuid}')">🗑 Delete</button>
+            </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function deleteSpec(uuid) {
+        if (confirm("Are you sure?")) {
+            await fetch(`${apiBase}/${uuid}`, { method: "DELETE" });
+            loadAll();
+        }
+    }
+
+    loadAll();
+</script>
+</body>
+</html>
+

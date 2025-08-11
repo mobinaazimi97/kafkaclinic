@@ -1,0 +1,15 @@
+{
+  "my_appointments": "My Appointments",
+  "enter_patient_id": "Enter Patient ID",
+  "load_appointments": "Load Appointments",
+  "no_appointments": "No appointments found.",
+  "back_to_specializations": "Back to Specializations",
+  "select_specialization": "Select Specialization",
+  "select_schedule": "Select Appointment Time",
+  "patient_id": "Patient ID",
+  "notes": "Notes",
+  "book_appointment": "Book Appointment",
+  "appointment_success": "Appointment booked successfully!",
+  "appointment_fail": "Failed to book appointment:",
+  "loading": "Loading..."
+}

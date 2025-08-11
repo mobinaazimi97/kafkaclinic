@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8"/>
+    <title data-i18n="my_appointments">نوبت‌های من</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css"/>
+
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 data-i18n="my_appointments">نوبت‌های من</h1>
+        <div>
+            <button class="btn btn-outline-primary btn-sm" onclick="setLanguage('fa')">FA</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="setLanguage('en')">EN</button>
+        </div>
+    </div>
+
+    <form id="patient-form" class="my-3 row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="patientIdInput" class="form-label" data-i18n="enter_patient_id">شناسه بیمار را وارد کنید</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="patientIdInput" class="form-control" required/>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary" data-i18n="load_appointments">بارگذاری نوبت‌ها</button>
+        </div>
+    </form>
+
+    <div id="appointments-list"></div>
+
+    <a href="index.html" class="btn btn-link mt-4" data-i18n="back_to_specializations">بازگشت به انتخاب تخصص</a>
+</div>
+
+<script src="js/translations.js"></script>
+<script>
+    const appointmentList = document.getElementById('appointment-list');
+    const patientForm = document.getElementById('patient-form');
+
+    function formatDateTime(dateTimeStr) {
+        const lang = currentLang;
+        const dt = new Date(dateTimeStr);
+        if (lang === 'fa') {
+            // ساده‌ترین حالت تاریخ شمسی (می‌تونی کتابخونه جدا استفاده کنی)
+            return dt.toLocaleDateString('fa-IR') + ' ' + dt.toLocaleTimeString('fa-IR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } else {
+            return dt.toLocaleString('en-US', {dateStyle: 'medium', timeStyle: 'short'});
+        }
+    }
+
+    function loadAppointments(patientId) {
+        fetch(`/appointments/patients/${patientId}`)
+            .then(res => {
+                if (res.ok) return res.json();
+                else throw new Error(res.statusText);
+            })
+            .then(data => {
+                appointmentList.innerHTML = '';
+                if (data.length === 0) {
+                    appointmentList.innerHTML = `<p data-i18n="no_appointments">هیچ نوبتی پیدا نشد.</p>`;
+                    applyTranslations();
+                    return;
+                }
+                data.forEach(app => {
+                    const card = document.createElement('div');
+                    card.className = 'card mb-3 shadow-sm';
+                    card.innerHTML = `
+                    <div class="card-body">
+                        <h5>${formatDateTime(app.appointmentDateTime)}</h5>
+                        <p>${app.notes || ''}</p>
+                    </div>
+                `;
+                    appointmentList.appendChild(card);
+                });  // اینجا پایان forEach هست
+                applyTranslations();  // ترجمه متون رو بعد از اضافه کردن المان‌ها اجرا می‌کنیم
+            })
+            .catch(err => {
+                appointmentList.innerHTML = `<p style="color:red;">${err.message}</p>`;
+            });
+    }
+</script>
+    <script src="js/main.js"></script>
+
+

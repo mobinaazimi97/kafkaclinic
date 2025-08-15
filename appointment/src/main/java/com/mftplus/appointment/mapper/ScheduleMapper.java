@@ -2,8 +2,8 @@ package com.mftplus.appointment.mapper;
 
 
 import com.mftplus.appointment.dto.ScheduleDto;
-import com.mftplus.appointment.entity.Doctor;
-import com.mftplus.appointment.entity.Schedule;
+import com.mftplus.appointment.model.entity.Doctor;
+import com.mftplus.appointment.model.entity.Schedule;
 import org.mapstruct.*;
 
 import java.util.List;

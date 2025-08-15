@@ -2,7 +2,9 @@ package com.mftplus.appointment.controller;
 
 
 import com.mftplus.appointment.dto.PermissionDto;
-import com.mftplus.appointment.service.PermissionService;
+import com.mftplus.appointment.model.service.PermissionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,29 +19,41 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
 
-    @GetMapping
-    public List<PermissionDto> getPermissions() {
-        return permissionService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public PermissionDto getPermission(@PathVariable UUID id) {
-        return permissionService.findById(id);
-    }
-
-    @PostMapping
-    public PermissionDto createPermission(@RequestBody PermissionDto permissionDto) {
-        return permissionService.save(permissionDto);
+    @PostMapping("/save")
+    public ResponseEntity<PermissionDto> createPermission(@RequestBody PermissionDto permissionDto) {
+        return ResponseEntity.ok(permissionService.save(permissionDto));
     }
 
     @PutMapping("/edit/{id}")
-    public PermissionDto updatePermission(@PathVariable UUID id, @RequestBody PermissionDto permissionDto) {
-        return permissionService.update(id, permissionDto);
+    public ResponseEntity<PermissionDto> updatePermission(@PathVariable UUID id, @RequestBody PermissionDto permissionDto) {
+        return ResponseEntity.ok(permissionService.update(id, permissionDto));
     }
 
-    @DeleteMapping("/{id}")
-    public void deletePermission(@PathVariable UUID id) {
+    @GetMapping
+    public ResponseEntity<List<PermissionDto>> getPermissions() {
+        return ResponseEntity.ok(permissionService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PermissionDto> getPermission(@PathVariable UUID id) {
+        return ResponseEntity.ok(permissionService.findById(id));
+    }
+
+    @GetMapping("/perm/{name}")
+    public ResponseEntity<PermissionDto> findByPermissionName(@PathVariable String name) {
+        return ResponseEntity.ok(permissionService.findByPermissionName(name));
+    }
+
+
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         permissionService.logicalRemove(id);
+        return ResponseEntity.ok("Permission Removed With ID " + id + " has been successfully deleted.");
     }
 
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }

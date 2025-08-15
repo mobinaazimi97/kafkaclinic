@@ -1,7 +1,7 @@
 package com.mftplus.appointment.mapper;
 
 import com.mftplus.appointment.dto.DoctorDto;
-import com.mftplus.appointment.entity.Doctor;
+import com.mftplus.appointment.model.entity.Doctor;
 
 import org.mapstruct.*;
 

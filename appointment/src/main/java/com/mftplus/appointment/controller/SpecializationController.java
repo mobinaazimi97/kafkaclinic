@@ -1,17 +1,18 @@
 package com.mftplus.appointment.controller;
 
 import com.mftplus.appointment.dto.SpecializationDto;
-import com.mftplus.appointment.service.SpecializationService;
+import com.mftplus.appointment.model.service.SpecializationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/specializations")
+@Slf4j
 public class SpecializationController {
     private final SpecializationService specializationService;
 
@@ -19,7 +20,7 @@ public class SpecializationController {
         this.specializationService = specializationService;
     }
 
-    @PostMapping
+    @PostMapping("/save")
     public ResponseEntity<SpecializationDto> post(@RequestBody SpecializationDto specializationDto) {
         SpecializationDto savedSpecialization = specializationService.save(specializationDto);
         log.info("savedSpecialization {}", savedSpecialization);
@@ -51,16 +52,15 @@ public class SpecializationController {
         return ResponseEntity.ok().body(specializationDtoList);
     }
 
-    @GetMapping("/doctor/{doctorName}/family/{family}")
-    public ResponseEntity<List<SpecializationDto>> findByDoctorNameAndFamily(@PathVariable String doctorName, @PathVariable String family) {
-        List<SpecializationDto> specializationDtoList = specializationService.findByDoctorNameAndFamily(doctorName, family);
-        return ResponseEntity.ok().body(specializationDtoList);
-    }
-
-    @DeleteMapping("/{specializationId}")
+    @DeleteMapping("/remove/{specializationId}")
     public ResponseEntity<Void> deleteSpecializationById(@PathVariable UUID specializationId) {
         specializationService.logicalRemove(specializationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
 

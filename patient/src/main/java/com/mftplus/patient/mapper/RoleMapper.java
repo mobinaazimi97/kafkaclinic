@@ -3,8 +3,8 @@ package com.mftplus.patient.mapper;
 
 
 import com.mftplus.patient.dto.RoleDto;
-import com.mftplus.patient.model.Role;
-import com.mftplus.patient.repository.PermissionRepository;
+import com.mftplus.patient.model.entity.Role;
+import com.mftplus.patient.model.repository.PermissionRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

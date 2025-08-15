@@ -2,7 +2,7 @@ package com.mftplus.appointment.mapper;
 
 
 import com.mftplus.appointment.dto.PermissionDto;
-import com.mftplus.appointment.entity.Permission;
+import com.mftplus.appointment.model.entity.Permission;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

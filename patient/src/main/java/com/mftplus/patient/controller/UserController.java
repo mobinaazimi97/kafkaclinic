@@ -2,10 +2,13 @@ package com.mftplus.patient.controller;
 
 
 import com.mftplus.patient.dto.UserDto;
-import com.mftplus.patient.service.UserService;
+import com.mftplus.patient.model.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -16,6 +19,16 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/save")
+    public UserDto createUser(@RequestBody UserDto userDto) {
+        return userService.save(userDto);
+    }
+
+    @PutMapping("/edit/{id}")
+    public UserDto updateUser(@PathVariable UUID id, @RequestBody UserDto userDto) {
+        return userService.update(id, userDto);
     }
 
     @GetMapping
@@ -35,19 +48,44 @@ public class UserController {
     }
 
 
-    @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.save(userDto);
+    @GetMapping("/username/{username}/pass/{password}")
+    public ResponseEntity<UserDto> findByUsernameAndPassword(@PathVariable String username, @PathVariable String password) {
+        return ResponseEntity.ok(userService.findByUsernameAndPassword(username, password));
     }
 
-    @PutMapping("/edit/{id}")
-    public UserDto updateUser(@PathVariable UUID id, @RequestBody UserDto userDto) {
-        return userService.update(id, userDto);
+    @GetMapping("/exist/{username}")
+    public ResponseEntity<Boolean> existsByUsername(@PathVariable String username) {
+        try {
+            return ResponseEntity.ok(userService.existsByUsername(username));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.valueOf(404)).build();
+        }
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/mail/{email}")
+    public ResponseEntity<UserDto> findByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.findByEmail(email));
+    }
+
+    @GetMapping("/userRole/{roleName}")
+    public ResponseEntity<Set<UserDto>> findByRoles(@PathVariable String roleName) {
+        return ResponseEntity.ok(userService.findByRoles(roleName));
+    }
+
+    @GetMapping("/userPerm/{permissionName}")
+    public ResponseEntity<Set<UserDto>> findBPermsOfUser(@PathVariable String permissionName) {
+        return ResponseEntity.ok(userService.findBPermsOfUser(permissionName));
+    }
+
+
+    @DeleteMapping("/remove/{id}")
     public void deleteUser(@PathVariable UUID id) {
         userService.logicalRemove(id);
     }
 
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }

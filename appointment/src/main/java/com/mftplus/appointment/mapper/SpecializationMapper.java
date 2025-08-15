@@ -1,7 +1,7 @@
 package com.mftplus.appointment.mapper;
 
 import com.mftplus.appointment.dto.SpecializationDto;
-import com.mftplus.appointment.entity.Specialization;
+import com.mftplus.appointment.model.entity.Specialization;
 import org.mapstruct.*;
 
 import java.util.List;

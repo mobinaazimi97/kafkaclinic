@@ -3,9 +3,9 @@ package com.mftplus.appointment.controller;
 import com.mftplus.appointment.dto.AppointmentDto;
 import com.mftplus.appointment.dto.ScheduleDto;
 import com.mftplus.appointment.dto.SpecializationDto;
-import com.mftplus.appointment.service.AppointmentService;
-import com.mftplus.appointment.service.ScheduleService;
-import com.mftplus.appointment.service.SpecializationService;
+import com.mftplus.appointment.model.service.AppointmentService;
+import com.mftplus.appointment.model.service.ScheduleService;
+import com.mftplus.appointment.model.service.SpecializationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +26,14 @@ public class AppointmentController {
         this.scheduleService = scheduleService;
     }
 
-    @PostMapping
+
+    @PostMapping("/save")
     public ResponseEntity<AppointmentDto> create(@RequestBody AppointmentDto dto) {
         return ResponseEntity.ok(appointmentService.create(dto));
     }
 
     @PutMapping("/edit/{id}")
+    //No Use - in url for uuid !!
     public ResponseEntity<AppointmentDto> update(@PathVariable UUID id, @RequestBody AppointmentDto dto) {
         AppointmentDto updated = appointmentService.update(id, dto);
         return ResponseEntity.ok(updated);
@@ -69,7 +71,8 @@ public class AppointmentController {
         return ResponseEntity.ok().body(specializationDtos);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/remove/{id}")
+    //No Use - in url for uuid !!
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         appointmentService.logicalRemove(id);
         return ResponseEntity.noContent().build();

@@ -1,0 +1,35 @@
+*No Use - in url for uuid!!*
+*spring.jpa.hibernate.ddl-auto = CREATE
+
+1-*Patients Get All Specializations :
+https://localhost:9443/patients/appointments/specializations
+--------------------------------------------------------------------------------------------------
+2-*Patients Get The Selected Specialization And See Free Times(Schedule) Of That Specialization :
+https://localhost:9443/patients/appointments/specializations/5d9d63c8-cdd1-402c-8ee3-0d378e0d4179
+ {
+        "scheduleUuid": "ed983625-7ca9-4699-b805-b7e737accc4c",
+        "doctorId": "39e25051-29b9-4338-9642-1820d4103727",
+        "doctorFirstName": "john",
+        "doctorLastName": "smith",
+        "startDateTime": "2025-08-25T13:00:00",
+        "endDateTime": "2025-08-25T13:30:00",
+        "appointmentDurationMin": 30,
+        "deleted": false,
+        "isBooked": false
+    } => Select An Schedule-Id And Add To Patient Body To Post Patient(These Schedules Are Free(isBooked=false))
+------------------------------------------------------------------------------------------
+3-*Patient Select ScheduleId And Post The Appointment (Appointment-App can be off it works by kafka*):
+https://localhost:9443/patients/appointments/save
+{
+    "scheduleId": "932765e5-f2e8-4727-80ab-417ae7c183ff",
+    "appointmentDateTime": "2025-08-14T10:00:00",
+    "notes": "save appointment",
+    "firstName": "john",
+    "lastName": "sss",
+    "phone": "09123456789",
+    "age" : "28"
+}
+---------------------------------------------------------------------------------------
+*Patient Can See Her Appointment :
+https://localhost:9443/patients/appointments/patients/22A14D81B58B4EF88E48E96181F293EF
+                                                    (this id is patient-id on appointment-table!)

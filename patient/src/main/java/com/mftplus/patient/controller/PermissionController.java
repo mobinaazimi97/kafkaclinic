@@ -1,9 +1,10 @@
 package com.mftplus.patient.controller;
 
 
-
 import com.mftplus.patient.dto.PermissionDto;
-import com.mftplus.patient.service.PermissionService;
+import com.mftplus.patient.model.service.PermissionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,16 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
 
+    @PostMapping("/save")
+    public PermissionDto createPermission(@RequestBody PermissionDto permissionDto) {
+        return permissionService.save(permissionDto);
+    }
+
+    @PutMapping("/edit/{id}")
+    public PermissionDto updatePermission(@PathVariable UUID id, @RequestBody PermissionDto permissionDto) {
+        return permissionService.update(id, permissionDto);
+    }
+
     @GetMapping
     public List<PermissionDto> getPermissions() {
         return permissionService.findAll();
@@ -28,19 +39,19 @@ public class PermissionController {
         return permissionService.findById(id);
     }
 
-    @PostMapping
-    public PermissionDto createPermission(@RequestBody PermissionDto permissionDto) {
-        return permissionService.save(permissionDto);
+    @GetMapping("/perm/{name}")
+    public ResponseEntity<PermissionDto> findByPermissionName(@PathVariable String name) {
+        return ResponseEntity.ok(permissionService.findByPermissionName(name));
     }
 
-    @PutMapping("/edit/{id}")
-    public PermissionDto updatePermission(@PathVariable UUID id, @RequestBody PermissionDto permissionDto) {
-        return permissionService.update(id, permissionDto);
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/remove/{id}")
     public void deletePermission(@PathVariable UUID id) {
         permissionService.logicalRemove(id);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
 }

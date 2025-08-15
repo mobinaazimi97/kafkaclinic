@@ -3,7 +3,7 @@ package com.mftplus.patient.mapper;
 
 
 import com.mftplus.patient.dto.PermissionDto;
-import com.mftplus.patient.model.Permission;
+import com.mftplus.patient.model.entity.Permission;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

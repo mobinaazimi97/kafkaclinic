@@ -1,12 +1,11 @@
 package com.mftplus.appointment;
 
 import com.mftplus.appointment.dto.*;
-import com.mftplus.appointment.service.*;
+import com.mftplus.appointment.model.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.time.LocalDateTime;
@@ -41,84 +40,25 @@ public class AppointmentApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //Spec :
 
-//        System.out.println(specializationService.findAll());
         SpecializationDto specializationDto = SpecializationDto.builder()
                 .skillName("heart")
                 .description("heart spec")
                 .deleted(false)
                 .build();
         SpecializationDto saved = specializationService.save(specializationDto);
-        System.out.println("saved spec :" + saved);
-//        System.out.println("found skill name on spec tbl : " + specializationService.findBySkillName("heart"));
-//        System.out.println("Found Doctor Name In Spec : " + specializationService.findByDoctorNameAndFamily("mobina", "azimi"));
-//        specializationService.logicalRemove(1L);
-//        System.out.println("saved spec :" + saved);
-//        System.out.println(" SPEC found ID :" + specializationService.findById(1L));
-
+        log.info("saved spec : {}" , saved);
+//----------------------------------------------------------------------------------------------
+        //Doctor :
         DoctorDto doctorDto = DoctorDto.builder()
-                .doctorFirstname("mobina")
-                .doctorLastname("azimi")
+                .doctorFirstname("alex")
+                .doctorLastname("alx")
                 .experienceYears(5)
-                .specializations(List.of(saved)) // specialization قبلاً save شده و ID داره
+                .specializations(List.of(saved))
                 .build();
-        DoctorDto savedDoctor = doctorService.save(doctorDto); // جدول join به‌درستی پر میشه
-        System.out.println("doctor saved : " + savedDoctor);
-        //----------------------------------------------------------------------------------------------
-        //Doctor : ->Wrong Way!!
-//        DoctorDto doctorDto = DoctorDto.builder()
-//                .doctorFirstname("john")
-//                .doctorLastname("alex")
-//                .specializations(new ArrayList<>())
-//                .deleted(false)
-//                .build();
-//        DoctorDto savedDoctor = doctorService.save(doctorDto);
-//        SpecializationDto specialization1 = specializationService.findById(saved.getSpecializationUuid());
-//        savedDoctor.getSpecializations().add(specialization1);
-//        DoctorDto finalDoctor = doctorService.save(savedDoctor);
-//        System.out.println("Final doctor :" + finalDoctor);
-//        System.out.println("doctor name found :"+doctorService.findByDoctorName("mobina","azimi"));
-
-//        SpecializationDto specializationDto = SpecializationDto.builder()
-//                .skillName("heart")
-//                .description("heart spec")
-//                .deleted(false)
-//                .build();
-//        SpecializationDto saved = specializationService.save(specializationDto);
-
-// doctor ro misazim
-//        DoctorDto doctorDto = DoctorDto.builder()
-//                .doctorFirstname("mobina")
-//                .doctorLastname("azimi")
-//                .specializations(new ArrayList<>())
-//                .deleted(false)
-//                .build();
-//
-//        DoctorDto savedDoctor = doctorService.save(doctorDto);
-//
-//// specialization ro miyarim ta be doctor ezafe konim
-//        SpecializationDto specialization1 = specializationService.findById(saved.getSpecializationId());
-//
-//// ✅ set doctorId va esm va famil baraye specialization
-//        specialization1.setDoctorId(savedDoctor.getDoctorId());
-//        specialization1.setDoctorFirstName(savedDoctor.getDoctorFirstname());
-//        specialization1.setDoctorLastName(savedDoctor.getDoctorLastname());
-//        SpecializationDto savedSpecializationDto1 = specializationService.save(specialization1);
-//        System.out.println("SAVED : "+savedSpecializationDto1);
-//
-//// ✅ doctor -> specialization
-//        savedDoctor.getSpecializations().add(savedSpecializationDto1);
-//
-//// ❗️optional: agar mapstruct to ro taghir dadi ke specialization -> doctors ro ham bezare, mituni in ro ham ezafe koni:
-////        specializationService.addDoctorToSpecialization(specialization1.getSpecializationId(), savedDoctor.getDoctorId());
-//
-//// doctor ro save mikonim
-//        DoctorDto finalDoctor = doctorService.save(savedDoctor);
-//        System.out.println("Final doctor :" + finalDoctor);
-//        System.out.println("Found Doctor fullName on SPEC : "+specializationService.findByDoctorNameAndFamily(savedDoctor.getDoctorFirstname(), savedDoctor.getDoctorLastname()));
-
-        //----------------------------------------------------------------------------------------------
+        DoctorDto savedDoctor = doctorService.save(doctorDto);
+        log.info("doctor saved : {} " , savedDoctor);
+//----------------------------------------------------------------------------------------------
         //Schedule :
         ScheduleDto scheduleDto = ScheduleDto.builder()
                 .startDateTime(LocalDateTime.of(2025, 8, 25, 12, 30))
@@ -128,223 +68,94 @@ public class AppointmentApplication implements CommandLineRunner {
                 .isBooked(false)
                 .build();
         ScheduleDto savedSchedule = scheduleService.createSchedulesForDoctor(savedDoctor.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
-        System.out.println("Saved Schedule For Doctor :" + savedSchedule);
+        log.info("Saved Schedule For Doctor : {}" , savedSchedule);
 
-//        System.out.println(scheduleService.getById(savedSchedule.getScheduleUuid()));
-//
-//        List<ScheduleDto> availableSchedulesBySpecialization = scheduleService.findAvailableSchedulesBySpecialization(
-//                saved.getSpecializationUuid()
-//        );
-//        System.out.println("Found free times in this spec req : " + availableSchedulesBySpecialization);
-        //----------------------------------------------------------------------------------------------
-        //Appointment :
-        AppointmentDto appointment1 =
-                AppointmentDto.builder()
-                        .appointmentDateTime(LocalDateTime.of(2025, 8, 25, 12, 30))  // زمان نوبت
-                        .scheduleId(savedSchedule.getScheduleUuid())
-                        .patientId(UUID.fromString("ad903218-bd67-4e50-800e-43de9f842a3d"))
-                        .build();
-        AppointmentDto savedAppointment1 = appointmentService.create(appointment1);
-
-        System.out.println("Saved Appointment :" + savedAppointment1);
-
-//        AppointmentDto appointment2 =
-//                AppointmentDto.builder()
-//                        .appointmentDateTime(LocalDateTime.of(2025, 8, 25, 13, 30))  // زمان نوبت
-//                        .scheduleId(2L)
-//                        .patientId(2L)
-//                        .build();
-//        AppointmentDto savedAppointment2 = appointmentService.create(appointment2);
-//        System.out.println("Saved Appointment 2 :" + savedAppointment2);
-//
-//        List<ScheduleDto> availableSchedulesBySpecialization2 = scheduleService.findAvailableSchedulesBySpecialization(
-//                1L
-//        );
-//        System.out.println("Found free times in this spec req 2 : " + availableSchedulesBySpecialization2);
-//        System.out.println("Found Schedule In Appointment :" + appointmentService.findAvailableSchedulesBySpecializationInAppointment(1L));
-////        System.out.println("Found Specializations In Appointment :"+appointmentService.findSpecializations());
-////
-//        System.out.println("Found Specializations In Schedule :" + scheduleService.findAvailableSchedulesBySpecialization(1L));
-
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        PermissionDto permissionDto = PermissionDto.builder().permissionName("ACCESS-ALL").build();
+//------------------------------------------------------------------------------------------------------------------------------
+        PermissionDto permissionDto = PermissionDto.builder().permissionName("ACCESS-ALL").build(); //For Admin
         PermissionDto savedPermission = permissionService.save(permissionDto);
-        System.out.println("Permission saved :"+savedPermission);
+        log.info("Permission_Access_All saved : {}" , savedPermission);
 
-        RoleDto roleDto = RoleDto.builder().roleName("ROLE_ADMIN").permissions(Set.of(savedPermission)).build();
+        PermissionDto permissionDto1 = PermissionDto.builder().permissionName("ACCESS-ALL-MODAL").build();  //For Manager
+        PermissionDto savedPermission1 = permissionService.save(permissionDto1);
+       log.info("Permission_All_Modal Saved : {}" , savedPermission1);
+
+        PermissionDto permissionDto2 = PermissionDto.builder().permissionName("ACCESS-TO-MODAL-PATIENT").build();  //For Admin Of Patient Client
+        PermissionDto savedPermission2 = permissionService.save(permissionDto2);
+        log.info("Permission_Modal_Patient_Access Saved : {}" , savedPermission2);
+
+        PermissionDto permissionDto3 = PermissionDto.builder().permissionName("USER-MODAL-SELF").build();  //For User
+        PermissionDto savedPermission3 = permissionService.save(permissionDto3);
+        log.info("Permission_Self_User Saved : {}" , savedPermission3);
+        //-------------------------------------------------------------------------------------------------------------------------------------------
+        RoleDto roleDto = RoleDto.builder().roleName("ADMIN").permissions(Set.of(savedPermission, savedPermission1, savedPermission2)).build();
         RoleDto savedRole = roleService.save(roleDto);
-        System.out.println("Role Saved :"+savedRole);
+        log.info("Role_Admin Saved : {}" , savedRole);
 
+        RoleDto roleDto1 = RoleDto.builder().roleName("MANAGER").permissions(Set.of(savedPermission1)).build();
+        RoleDto savedRole1 = roleService.save(roleDto1);
+        log.info("Role_Manager Saved : {}" , savedRole1);
+
+        RoleDto roleDto2 = RoleDto.builder().roleName("ADMIN_PATIENT_CLIENT").permissions(Set.of(savedPermission2)).build();
+        RoleDto savedRole2 = roleService.save(roleDto2);
+        log.info("Role_Admin_Clients Saved : {}" , savedRole2);
+
+        RoleDto roleDto3 = RoleDto.builder().roleName("User").permissions(Set.of(savedPermission3)).build();
+        RoleDto savedRole3 = roleService.save(roleDto3);
+        log.info("Role_User Saved : {}" , savedRole3);
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
         UserDto userDto = UserDto.builder()
-                .username("mobi")
-                .password("m32145")
+                .username("user-admin")
+                .password("admin-pass")
                 .roles(Set.of(savedRole))
                 .build();
         UserDto userSaved = userService.save(userDto);
-        System.out.println("User saved :"+userSaved);
+        log.info("User-Admin Saved : {}" , userSaved);
 
-//
-//-----------------------------todo
-//        log.info("Testing findAvailableSchedulesBySpecializationAndDoctor");
-//        List<ScheduleDto> availableSchedulesBySpecialization = scheduleService.findAvailableSchedulesBySpecializationAndDoctor(
-//                saved.getSpecializationId(),
-//                null, // بدون doctorId
-//                LocalDateTime.of(2025, 7, 22, 0, 0), // بازه زمانی گسترده‌تر
-//                LocalDateTime.of(2025, 7, 23, 23, 59)
-//        );
-//        log.info("Found {} available schedules for specializationId "+
-//                availableSchedulesBySpecialization,
-//                saved.getSpecializationId());
-//        availableSchedulesBySpecialization.forEach(schedule ->
-//                log.info("Schedule id={}, startTime={}, isBooked={}, doctor={} {}",
-//                        schedule.getScheduleId(),
-//                        schedule.getStartDateTime(),
-//                        schedule.isBooked(),
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorFirstname() : "null",
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorLastname() : "null")
-//        );
+        UserDto userDto1 = UserDto.builder()
+                .username("user-manager")
+                .password("mng-pass")
+                .roles(Set.of(savedRole1))
+                .build();
+        UserDto userSaved1 = userService.save(userDto1);
+        log.info("User-Manager Saved : {}", userSaved1);
 
 
-//        log.info("Found {} available schedules for specializationId={}", availableSchedulesBySpecialization.size(), saved.getSpecializationId());
-//        availableSchedulesBySpecialization.forEach(schedule ->
-//                log.info("Schedule id={}, startTime={}, doctor={} {}",
-//                        schedule.getScheduleId(),
-//                        schedule.getStartDateTime(),
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorFirstname() : "null",
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorLastname() : "null")
-//        );
+        UserDto userDto2 = UserDto.builder()
+                .username("user-admin-clients")
+                .password("admin-client-pass")
+                .roles(Set.of(savedRole2))
+                .build();
+        UserDto userSaved2 = userService.save(userDto2);
+       log.info("User-Admin-Client Saved : {}" , userSaved2);
 
 
-//        AppointmentDto appointment2 =
-//                AppointmentDto.builder()
-//                        .appointmentDateTime(LocalDateTime.of(2025, 1, 11, 12, 12))
-////                        .endDateTime(LocalDateTime.of(2025, 1, 11, 12, 12))
-//                        .patientId(2L)
-////                        .schedule(savedSchedule)
-//                        .build();
-//        System.out.println(appointment2);
-//        appointmentService.create(appointment1);
-//        appointmentService.create(appointment2);
-//        System.out.println("Saved Appointment :" + appointment1);
-//        System.out.println("Saved Appointment :" + appointment2);
-//
-//
-////        System.out.println("doctors found for appointment :"+appointmentService.findDoctorFullName(savedDoctor.getDoctorFirstname(), savedDoctor.getDoctorLastname()));
-//        System.out.println("All Appointments :"+appointmentService.getAll());
-//        ------------------------------------------------------------
-//                System.out.println("FIND ALL : " + appointmentService.getAll());
-//        AppointmentDto appointmentDto = AppointmentDto.builder()
-//                .patientId(1L)
-//                .appointmentDateTime(LocalDateTime.of(2025, 5, 20, 14, 0))
-//                .notes("Checkup")
-//                .build();
-//
-//        AppointmentDto savedAppointment = appointmentService.create(appointmentDto);
-//        System.out.println("Saved appointment: " + savedAppointment);
+        UserDto userDto3 = UserDto.builder()
+                .username("user-manage-server")
+                .password("user-server-pass")
+                .roles(Set.of(savedRole1, savedRole2))
+                .build();
+        UserDto userSaved3 = userService.save(userDto3);
+       log.info("User-Manage-Server Saved : {} " , userSaved3);
 
+        UserDto userDto4 = UserDto.builder()
+                .username("user")
+                .password("user-pass")
+                .roles(Set.of(savedRole3))
+                .build();
+        UserDto userSaved4 = userService.save(userDto4);
+       log.info("User Saved :{}" , userSaved4);
 
-        // 1. ساخت تخصص
-//        SpecializationDto specializationDto = SpecializationDto.builder()
-//                .skillName("heart")
-//                .description("Cardiology specialization")
-//                .build();
-//        SpecializationDto savedSpecialization = specializationService.save(specializationDto);
-//        log.info("Saved Specialization: id={}, skillName={}", savedSpecialization.getSpecializationId(), savedSpecialization.getSkillName());
-//
-//        // 2. ساخت پزشک
-//        DoctorDto doctorDto = DoctorDto.builder()
-//                .doctorFirstname("mobina")
-//                .doctorLastname("azimi")
-//                .specializations(List.of(savedSpecialization))
-//                .build();
-//        DoctorDto savedDoctor = doctorService.save(doctorDto);
-//        log.info("Saved Doctor: id={}, name={} {}", savedDoctor.getDoctorId(), savedDoctor.getDoctorFirstname(), savedDoctor.getDoctorLastname());
-//
-//        // 3. ساخت برنامه‌های آزاد
-//        ScheduleDto scheduleDto1 = ScheduleDto.builder()
-//                .startDateTime(LocalDateTime.of(2025, 7, 18, 12, 0))
-//                .endDateTime(LocalDateTime.of(2025, 7, 18, 13, 0))
-//                .doctor(savedDoctor)
-//                .appointmentDurationMin(30)
-//                .isBooked(false)
-//                .build();
-//        ScheduleDto savedSchedule1 = scheduleService.save(scheduleDto1);
-//        log.info("Saved Schedule 1: id={}, startTime={}", savedSchedule1.getScheduleId(), savedSchedule1.getStartDateTime());
-//
-//        ScheduleDto scheduleDto2 = ScheduleDto.builder()
-//                .startDateTime(LocalDateTime.of(2025, 7, 18, 14, 0))
-//                .endDateTime(LocalDateTime.of(2025, 7, 18, 15, 0))
-//                .doctor(savedDoctor)
-//                .appointmentDurationMin(30)
-//                .isBooked(false)
-//                .build();
-//        ScheduleDto savedSchedule2 = scheduleService.save(scheduleDto2);
-//        log.info("Saved Schedule 2: id={}, startTime={}", savedSchedule2.getScheduleId(), savedSchedule2.getStartDateTime());
-//
-//        // 4. تست متد findAvailableSchedulesBySpecializationAndDoctor
-//        // سناریو ۱: پیدا کردن برنامه‌ها فقط با specializationId
-//        log.info("Testing findAvailableSchedulesBySpecializationAndDoctor with only specializationId");
-//        List<ScheduleDto> availableSchedulesBySpecialization = scheduleService.findAvailableSchedulesBySpecializationAndDoctor(
-//                savedSpecialization.getSpecializationId(),
-//                null, // بدون doctorId
-//                LocalDateTime.of(2025, 7, 18, 0, 0),
-//                LocalDateTime.of(2025, 7, 18, 23, 59)
-//        );
-//        log.info("Found {} available schedules for specializationId={}", availableSchedulesBySpecialization.size(), savedSpecialization.getSpecializationId());
-//        availableSchedulesBySpecialization.forEach(schedule ->
-//                log.info("Schedule id={}, startTime={}, doctor={} {}",
-//                        schedule.getScheduleId(),
-//                        schedule.getStartDateTime(),
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorFirstname() : "null",
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorLastname() : "null")
-//        );
-//
-//        // سناریو ۲: پیدا کردن برنامه‌ها با specializationId و doctorId
-//        log.info("Testing findAvailableSchedulesBySpecializationAndDoctor with specializationId and doctorId");
-//        List<ScheduleDto> availableSchedulesByDoctor = scheduleService.findAvailableSchedulesBySpecializationAndDoctor(
-//                savedSpecialization.getSpecializationId(),
-//                savedDoctor.getDoctorId(),
-//                LocalDateTime.of(2025, 7, 18, 0, 0),
-//                LocalDateTime.of(2025, 7, 18, 23, 59)
-//        );
-//        log.info("Found {} available schedules for specializationId={} and doctorId={}",
-//                availableSchedulesByDoctor.size(),
-//                savedSpecialization.getSpecializationId(),
-//                savedDoctor.getDoctorId());
-//        availableSchedulesByDoctor.forEach(schedule ->
-//                log.info("Schedule id={}, startTime={}, doctor={} {}",
-//                        schedule.getScheduleId(),
-//                        schedule.getStartDateTime(),
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorFirstname() : "null",
-//                        schedule.getDoctor() != null ? schedule.getDoctor().getDoctorLastname() : "null")
-//        );
-//
-//        // 5. ساخت نوبت برای تست isBooked
-//        AppointmentDto appointment1 = AppointmentDto.builder()
-//                .appointmentDateTime(LocalDateTime.of(2025, 7, 18, 12, 30))
-//                .patientId(1L)
-//                .schedule(savedSchedule1)
-//                .build();
-//        appointmentService.create(appointment1);
-//        log.info("Saved Appointment 1: id={}, patientId={}", appointment1.getId(), appointment1.getPatientId());
-//
-//        // 6. تست دوباره برای اطمینان از فیلتر isBooked
-//        log.info("Testing findAvailableSchedulesBySpecializationAndDoctor after booking an appointment");
-//        List<ScheduleDto> availableSchedulesAfterBooking = scheduleService.findAvailableSchedulesBySpecializationAndDoctor(
-//                savedSpecialization.getSpecializationId(),
-//                savedDoctor.getDoctorId(),
-//                LocalDateTime.of(2025, 7, 18, 0, 0),
-//                LocalDateTime.of(2025, 7, 18, 23, 59)
-//        );
-//        log.info("Found {} available schedules after booking", availableSchedulesAfterBooking.size());
-//        availableSchedulesAfterBooking.forEach(schedule ->
-//                log.info("Schedule id={}, startTime={}, isBooked={}",
-//                        schedule.getScheduleId(),
-//                        schedule.getStartDateTime(),
-//                        schedule.isBooked())
-//        );
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
 
+        AppointmentDto appointment1 =
+                AppointmentDto.builder()
+                        .appointmentDateTime(LocalDateTime.of(2025, 8, 25, 16, 30))  // زمان نوبت
+                        .scheduleId(savedSchedule.getScheduleUuid())
+                        .patientUuid(UUID.fromString("ad903218-bd67-4e50-800e-43de9f842a3d"))
+                        .build();
+        AppointmentDto savedAppointment1 = appointmentService.create(appointment1);
+
+        log.info("Saved Appointment : {}" , savedAppointment1);
 
     }
 }

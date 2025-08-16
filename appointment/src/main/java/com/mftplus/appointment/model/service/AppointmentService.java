@@ -64,7 +64,6 @@ public class AppointmentService {
 
         AppointmentDto resultDto = appointmentMapper.toDto(savedAppointment);
         resultDto.getPersianStartDate();
-
         return resultDto;
     }
 

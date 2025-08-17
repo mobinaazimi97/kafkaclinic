@@ -1,17 +1,19 @@
-For Check Apis :
+--(For Check APIs :
 Check the readme file of the appointment app & patient app!!
+)
+-Build-Tool => Maven
+-Jdk => 17
+-Broker => Kafka(Local)
+-Architecture => Microservice
+-Security => SpringSecurity with ROLE & PERMISSION
+-Web => Rest-Api / FeignClient
+-Deployment => Docker
+-Test-Tool => Postman
+-Monitoring-Tools => Prometheus , VisualVm
+-Json-Lib => Jackson
+-Database => Oracle
+-Exception Handling => ControllerAdvice
 
-Build-Tool => Maven
-Jdk => 17
-Broker => Kafka(Local)
-Architecture => Microservice
-Security => SpringSecurity with ROLE & PERMISSION
-Web => Rest-Api / FeignClient
-Deployment => Docker
-Test-Tool => Postman
-Monitoring-Tools => Prometheus , VisualVm
-Json-Lib => Jackson
-Database => Oracle
 
 
 

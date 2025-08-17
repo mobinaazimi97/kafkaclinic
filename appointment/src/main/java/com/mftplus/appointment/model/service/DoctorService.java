@@ -77,7 +77,7 @@ public class DoctorService {
                 Schedule schedule = scheduleRepository
                         .findByScheduleUuid(scheduleDto.getScheduleUuid())
                         .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleDto.getScheduleUuid()));
-                schedule.setDoctor(doctor); // ست کردن دکتر در شِدول
+                schedule.setDoctor(doctor);
                 schedules.add(schedule);
             }
             doctor.setSchedules(schedules);

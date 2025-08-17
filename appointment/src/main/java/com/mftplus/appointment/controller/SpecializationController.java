@@ -3,7 +3,6 @@ package com.mftplus.appointment.controller;
 import com.mftplus.appointment.dto.SpecializationDto;
 import com.mftplus.appointment.model.service.SpecializationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,11 +55,6 @@ public class SpecializationController {
     public ResponseEntity<Void> deleteSpecializationById(@PathVariable UUID specializationId) {
         specializationService.logicalRemove(specializationId);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
 

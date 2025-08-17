@@ -4,7 +4,6 @@ import com.mftplus.patient.dto.PatientDto;
 import com.mftplus.patient.model.service.AppointmentService;
 import com.mftplus.patient.model.service.PatientService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,11 +92,6 @@ public class PatientController {
     @GetMapping("/appointments/specializations/{specializationId}")
     public ResponseEntity<List<?>> findAvailableSchedulesBySpecializationInAppointment(@PathVariable UUID specializationId) {
         return ResponseEntity.ok(appointmentService.findAvailableSchedulesBySpecializationInAppointment(specializationId).getBody());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
 }

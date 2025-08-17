@@ -32,6 +32,9 @@ public class Patient extends Base {
     @Column(name = "appointment_uuid", unique = true, updatable = false)
     private UUID appointmentUuid;
 
+    @Column(name = "schedule_uuid", unique = true, updatable = false)
+    private UUID scheduleId;
+
     @Column(name = "firstName")
     private String firstName;
 

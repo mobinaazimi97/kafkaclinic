@@ -22,7 +22,7 @@ public interface DoctorMapper {
 
     @Mapping(target = "doctorId", ignore = true)
     @Mapping(target = "doctorUuid", ignore = true)
-    @Mapping(target = "specializations", ignore = true) // بهتر مدیریت شود جداگانه اگر لازم است
+    @Mapping(target = "specializations", ignore = true)
     @Mapping(target = "schedules", ignore = true)
     void updateFromDto(DoctorDto dto, @MappingTarget Doctor entity);
 }

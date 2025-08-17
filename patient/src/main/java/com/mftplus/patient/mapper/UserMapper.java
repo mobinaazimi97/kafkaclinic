@@ -22,7 +22,6 @@ public interface UserMapper {
     @Mapping(target = "roles", source = "roles")
     List<UserDto> toDtoList(List<User> users);
 
-    //    @Mapping(target = "roleSet", source = "roleSet")
     List<User> toEntityList(List<UserDto> userDtos);
 
     @Mapping(target = "roles", source = "roles")

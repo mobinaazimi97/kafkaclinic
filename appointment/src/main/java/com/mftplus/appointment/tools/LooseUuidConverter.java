@@ -17,7 +17,6 @@ public class LooseUuidConverter implements Converter<String, UUID> {
 
         String cleaned = source.replaceAll("\\s+", "").toLowerCase();
 
-        // اگر UUID بدون dash بود، dashها رو اضافه کن
         if (cleaned.matches("^[0-9a-f]{32}$")) {
             cleaned = cleaned.replaceAll(
                     "([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})",

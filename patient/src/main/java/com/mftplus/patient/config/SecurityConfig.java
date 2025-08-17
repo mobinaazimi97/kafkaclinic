@@ -63,7 +63,7 @@ public class SecurityConfig {
         boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
 
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS with custom configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -93,7 +93,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/actuator/prometheus", "*/**", "/h2-console/**", "/public/**").permitAll() // Allow public access to certain paths
+                        .requestMatchers("/login", "/actuator/prometheus", "*/**", "/h2-console/**", "/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
@@ -112,7 +112,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .addLogoutHandler((request, response, authentication) -> {
                             if (authentication != null) {
-                                logger.info("User {} logged out at {}", authentication.getName(), LocalDateTime.now()); // Log logout event
+                                logger.info("User {} logged out at {}", authentication.getName(), LocalDateTime.now());
                             }
                             removeCustomCookie(response);
                         })
@@ -138,7 +138,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://localhost:9443", "https://localhost:8443", "https://localhost:9090", "https://localhost:9443/actuator/prometheus")); // Allow specific origin
+        configuration.setAllowedOrigins(List.of("https://localhost:9443", "https://localhost:8443", "https://localhost:9090", "https://localhost:9443/actuator/prometheus"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setExposedHeaders(List.of("Authorization"));

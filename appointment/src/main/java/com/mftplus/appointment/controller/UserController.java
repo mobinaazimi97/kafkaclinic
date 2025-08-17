@@ -102,9 +102,4 @@ public class UserController {
         userService.logicalRemove(id);
         return ResponseEntity.ok("User Removed With ID " + id + " has been successfully deleted.");
     }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
 }

@@ -3,7 +3,6 @@ package com.mftplus.patient.controller;
 
 import com.mftplus.patient.dto.RoleDto;
 import com.mftplus.patient.model.service.RoleService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +53,6 @@ public class RoleController {
     @DeleteMapping("/remove/{id}")
     public void deleteRole(@PathVariable UUID id) {
         roleService.logicalRemove(id);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
 }

@@ -2,7 +2,6 @@ package com.mftplus.appointment.controller;
 
 import com.mftplus.appointment.dto.DoctorDto;
 import com.mftplus.appointment.model.service.DoctorService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,10 +76,5 @@ public class DoctorController {
     public ResponseEntity<?> deleteDoctor(@PathVariable UUID doctorId) {
         doctorService.logicalRemove(doctorId);
         return ResponseEntity.ok("Doctor Removed With ID " + doctorId + " has been successfully deleted.");
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

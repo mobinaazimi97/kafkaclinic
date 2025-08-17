@@ -2,7 +2,6 @@ package com.mftplus.appointment.controller;
 
 import com.mftplus.appointment.dto.ScheduleDto;
 import com.mftplus.appointment.model.service.ScheduleService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +38,7 @@ public class ScheduleController {
 
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDto> getScheduleById(@PathVariable UUID scheduleId) {
-        ScheduleDto schedule = scheduleService.getById(scheduleId); // Correct return type
+        ScheduleDto schedule = scheduleService.getById(scheduleId);
         return ResponseEntity.ok(schedule);
     }
 
@@ -55,11 +54,6 @@ public class ScheduleController {
     public ResponseEntity<Void> delete(@PathVariable UUID scheduleId) {
         scheduleService.logicalRemove(scheduleId);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
 }

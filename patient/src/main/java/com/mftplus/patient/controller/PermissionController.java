@@ -3,7 +3,6 @@ package com.mftplus.patient.controller;
 
 import com.mftplus.patient.dto.PermissionDto;
 import com.mftplus.patient.model.service.PermissionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,11 +46,6 @@ public class PermissionController {
     @DeleteMapping("/remove/{id}")
     public void deletePermission(@PathVariable UUID id) {
         permissionService.logicalRemove(id);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
 }

@@ -48,7 +48,7 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, AppointmentDto> consumerFactory() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule()); // برای تاریخ و زمان
+        mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         JsonDeserializer<AppointmentDto> deserializer = new JsonDeserializer<>(AppointmentDto.class, mapper, false);

@@ -20,7 +20,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "JOIN d.specializations sp " +
             "WHERE sp.specializationId = :specializationId " +
             "AND s.isBooked = false " +
-            "AND s.startDateTime >= CURRENT_TIMESTAMP " +  //*Just the futures!
+            "AND s.startDateTime >= CURRENT_TIMESTAMP " +
             "ORDER BY s.startDateTime")
     List<Schedule> findAvailableSchedulesBySpecialization(@Param("specializationId") Long specializationId);
 

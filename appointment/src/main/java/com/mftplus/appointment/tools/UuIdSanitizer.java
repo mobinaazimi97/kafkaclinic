@@ -13,7 +13,6 @@ public class UuIdSanitizer extends JsonDeserializer<UUID> {
     public UUID deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         String raw = p.getText().replaceAll("\\s+", "").toLowerCase();
 
-        // اگر UUID بدون dash بود، dashها رو اضافه کن
         if (raw.matches("^[0-9a-f]{32}$")) {
             raw = raw.replaceAll(
                     "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{12})",

@@ -6,7 +6,7 @@ import com.mftplus.appointment.dto.SpecializationDto;
 import com.mftplus.appointment.model.service.AppointmentService;
 import com.mftplus.appointment.model.service.ScheduleService;
 import com.mftplus.appointment.model.service.SpecializationService;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/appointments")
+@Slf4j
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final SpecializationService specializationService;
@@ -77,11 +78,4 @@ public class AppointmentController {
         appointmentService.logicalRemove(id);
         return ResponseEntity.noContent().build();
     }
-
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
 }

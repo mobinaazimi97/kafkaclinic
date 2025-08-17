@@ -47,7 +47,7 @@ public class AppointmentApplication implements CommandLineRunner {
                 .deleted(false)
                 .build();
         SpecializationDto saved = specializationService.save(specializationDto);
-        log.info("saved spec : {}" , saved);
+        log.info("saved spec : {}", saved);
 //----------------------------------------------------------------------------------------------
         //Doctor :
         DoctorDto doctorDto = DoctorDto.builder()
@@ -57,7 +57,7 @@ public class AppointmentApplication implements CommandLineRunner {
                 .specializations(List.of(saved))
                 .build();
         DoctorDto savedDoctor = doctorService.save(doctorDto);
-        log.info("doctor saved : {} " , savedDoctor);
+        log.info("doctor saved : {} ", savedDoctor);
 //----------------------------------------------------------------------------------------------
         //Schedule :
         ScheduleDto scheduleDto = ScheduleDto.builder()
@@ -68,40 +68,40 @@ public class AppointmentApplication implements CommandLineRunner {
                 .isBooked(false)
                 .build();
         ScheduleDto savedSchedule = scheduleService.createSchedulesForDoctor(savedDoctor.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
-        log.info("Saved Schedule For Doctor : {}" , savedSchedule);
+        log.info("Saved Schedule For Doctor : {}", savedSchedule);
 
 //------------------------------------------------------------------------------------------------------------------------------
         PermissionDto permissionDto = PermissionDto.builder().permissionName("ACCESS-ALL").build(); //For Admin
         PermissionDto savedPermission = permissionService.save(permissionDto);
-        log.info("Permission_Access_All saved : {}" , savedPermission);
+        log.info("Permission_Access_All saved : {}", savedPermission);
 
         PermissionDto permissionDto1 = PermissionDto.builder().permissionName("ACCESS-ALL-MODAL").build();  //For Manager
         PermissionDto savedPermission1 = permissionService.save(permissionDto1);
-       log.info("Permission_All_Modal Saved : {}" , savedPermission1);
+        log.info("Permission_All_Modal Saved : {}", savedPermission1);
 
         PermissionDto permissionDto2 = PermissionDto.builder().permissionName("ACCESS-TO-MODAL-PATIENT").build();  //For Admin Of Patient Client
         PermissionDto savedPermission2 = permissionService.save(permissionDto2);
-        log.info("Permission_Modal_Patient_Access Saved : {}" , savedPermission2);
+        log.info("Permission_Modal_Patient_Access Saved : {}", savedPermission2);
 
         PermissionDto permissionDto3 = PermissionDto.builder().permissionName("USER-MODAL-SELF").build();  //For User
         PermissionDto savedPermission3 = permissionService.save(permissionDto3);
-        log.info("Permission_Self_User Saved : {}" , savedPermission3);
+        log.info("Permission_Self_User Saved : {}", savedPermission3);
         //-------------------------------------------------------------------------------------------------------------------------------------------
         RoleDto roleDto = RoleDto.builder().roleName("ADMIN").permissions(Set.of(savedPermission, savedPermission1, savedPermission2)).build();
         RoleDto savedRole = roleService.save(roleDto);
-        log.info("Role_Admin Saved : {}" , savedRole);
+        log.info("Role_Admin Saved : {}", savedRole);
 
         RoleDto roleDto1 = RoleDto.builder().roleName("MANAGER").permissions(Set.of(savedPermission1)).build();
         RoleDto savedRole1 = roleService.save(roleDto1);
-        log.info("Role_Manager Saved : {}" , savedRole1);
+        log.info("Role_Manager Saved : {}", savedRole1);
 
         RoleDto roleDto2 = RoleDto.builder().roleName("ADMIN_PATIENT_CLIENT").permissions(Set.of(savedPermission2)).build();
         RoleDto savedRole2 = roleService.save(roleDto2);
-        log.info("Role_Admin_Clients Saved : {}" , savedRole2);
+        log.info("Role_Admin_Clients Saved : {}", savedRole2);
 
         RoleDto roleDto3 = RoleDto.builder().roleName("User").permissions(Set.of(savedPermission3)).build();
         RoleDto savedRole3 = roleService.save(roleDto3);
-        log.info("Role_User Saved : {}" , savedRole3);
+        log.info("Role_User Saved : {}", savedRole3);
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
         UserDto userDto = UserDto.builder()
                 .username("user-admin")
@@ -109,7 +109,7 @@ public class AppointmentApplication implements CommandLineRunner {
                 .roles(Set.of(savedRole))
                 .build();
         UserDto userSaved = userService.save(userDto);
-        log.info("User-Admin Saved : {}" , userSaved);
+        log.info("User-Admin Saved : {}", userSaved);
 
         UserDto userDto1 = UserDto.builder()
                 .username("user-manager")
@@ -126,7 +126,7 @@ public class AppointmentApplication implements CommandLineRunner {
                 .roles(Set.of(savedRole2))
                 .build();
         UserDto userSaved2 = userService.save(userDto2);
-       log.info("User-Admin-Client Saved : {}" , userSaved2);
+        log.info("User-Admin-Client Saved : {}", userSaved2);
 
 
         UserDto userDto3 = UserDto.builder()
@@ -135,7 +135,7 @@ public class AppointmentApplication implements CommandLineRunner {
                 .roles(Set.of(savedRole1, savedRole2))
                 .build();
         UserDto userSaved3 = userService.save(userDto3);
-       log.info("User-Manage-Server Saved : {} " , userSaved3);
+        log.info("User-Manage-Server Saved : {} ", userSaved3);
 
         UserDto userDto4 = UserDto.builder()
                 .username("user")
@@ -143,19 +143,19 @@ public class AppointmentApplication implements CommandLineRunner {
                 .roles(Set.of(savedRole3))
                 .build();
         UserDto userSaved4 = userService.save(userDto4);
-       log.info("User Saved :{}" , userSaved4);
+        log.info("User Saved :{}", userSaved4);
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
         AppointmentDto appointment1 =
                 AppointmentDto.builder()
-                        .appointmentDateTime(LocalDateTime.of(2025, 8, 25, 16, 30))  // زمان نوبت
+                        .appointmentDateTime(LocalDateTime.of(2025, 8, 25, 16, 30))
                         .scheduleId(savedSchedule.getScheduleUuid())
                         .patientUuid(UUID.fromString("ad903218-bd67-4e50-800e-43de9f842a3d"))
                         .build();
         AppointmentDto savedAppointment1 = appointmentService.create(appointment1);
 
-        log.info("Saved Appointment : {}" , savedAppointment1);
+        log.info("Saved Appointment : {}", savedAppointment1);
 
     }
 }

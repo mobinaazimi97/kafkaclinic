@@ -86,7 +86,6 @@ public class UserService {
     }
 
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
     public UserDto update(UUID id, UserDto userDto) {
         User user = userRepository.findByUserUuid(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -124,7 +123,6 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "users")
     public Set<UserDto> findByRoleName(String roleName) {
         Set<User> user = userRepository.findByRoles(roleName);
         return userMapper.toDtoSet(user);
@@ -139,7 +137,6 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "users")
     public Set<UserDto> findBPermsOfUser(String permissionName) {
         Set<User> userPerms = userRepository.findBPermsOfUser(permissionName);
         return userMapper.toDtoSet(userPerms);

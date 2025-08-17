@@ -35,7 +35,6 @@ public class PermissionService {
     }
 
     @Transactional
-    @CacheEvict(value = "permissions", allEntries = true)
     public PermissionDto update(UUID id, PermissionDto permissionDto) {
         Permission permission = permissionRepository.findByPermUuid(id).orElse(null);
         permissionMapper.updateFromDto(permissionDto, permission);
@@ -58,7 +57,6 @@ public class PermissionService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "permissions")
     public PermissionDto findByPermissionName(String permissionName) {
         Permission permission = permissionRepository.findByPermissionName(permissionName)
                 .orElseThrow(() -> new EntityNotFoundException("Permission not found by PERM-NAME: " + permissionName));

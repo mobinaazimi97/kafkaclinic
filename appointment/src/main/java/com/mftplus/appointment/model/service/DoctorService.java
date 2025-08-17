@@ -47,6 +47,7 @@ public class DoctorService {
     }
 
     @Transactional
+    @CacheEvict(value = "doctors", allEntries = true)
     public DoctorDto save(DoctorDto doctorDto) {
         Doctor doctor = doctorMapper.toEntity(doctorDto);
 
@@ -86,23 +87,7 @@ public class DoctorService {
         return doctorMapper.toDto(savedDoctor);
     }
 
-
-    @Transactional(readOnly = true)
-    @Cacheable(value = "doctors")
-    public DoctorDto findSchedule(UUID scheduleUuid) {
-        Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleUuid)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleUuid));
-
-        Long scheduleId = schedule.getScheduleId();
-
-        Doctor doctor = doctorRepository.findSchedule(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("Doctor not found for schedule ID: " + scheduleId));
-
-        return doctorMapper.toDto(doctor);
-    }
-
     @Transactional
-    @CacheEvict(value = "doctors", allEntries = true)
     public DoctorDto update(UUID doctorUuid, DoctorDto doctorDto) {
         Doctor doctor = doctorRepository.findByDoctorUuid(doctorUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found for UUID: " + doctorUuid));
@@ -121,6 +106,20 @@ public class DoctorService {
         return doctorMapper.toDtoList(doctorList);
     }
 
+    @Transactional(readOnly = true)
+    public DoctorDto findSchedule(UUID scheduleUuid) {
+        Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleUuid)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleUuid));
+
+        Long scheduleId = schedule.getScheduleId();
+
+        Doctor doctor = doctorRepository.findSchedule(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found for schedule ID: " + scheduleId));
+
+        return doctorMapper.toDto(doctor);
+    }
+
+
     @Transactional
     @Cacheable(value = "doctors")
     public DoctorDto findById(UUID id) {
@@ -129,20 +128,19 @@ public class DoctorService {
         return doctorMapper.toDto(doctor);
     }
 
-    @Transactional
-    @Cacheable(value = "doctors")
+    @Transactional(readOnly = true)
     public List<DoctorDto> findByDoctorName(String doctorFirstname, String doctorLastname) {
         List<Doctor> doctorList = doctorRepository.findByDoctorName(doctorFirstname, doctorLastname);
         return doctorMapper.toDtoList(doctorList);
     }
 
+    @Transactional(readOnly = true)
     public List<DoctorDto> findSpecializations() {
         List<Doctor> doctorList = doctorRepository.findSpecializations();
         return doctorMapper.toDtoList(doctorList);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "doctors")
     public DoctorDto getDoctorWithSpecializations(UUID doctorUuid) {
         Doctor doctor = doctorRepository.findByDoctorUuid(doctorUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found with UUID: " + doctorUuid));

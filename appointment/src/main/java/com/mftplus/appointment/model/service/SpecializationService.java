@@ -46,7 +46,6 @@ public class SpecializationService {
 
 
     @Transactional
-    @CacheEvict(value = "specializations", allEntries = true)
     public SpecializationDto update(UUID specializationId, SpecializationDto specializationDto) {
 
         Specialization specialization = specializationRepository.findByUuId(specializationId).orElseThrow(() -> new EntityNotFoundException("Spec not found for UUID: " + specializationId));

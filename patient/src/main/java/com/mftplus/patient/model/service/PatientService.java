@@ -87,7 +87,6 @@ public class PatientService {
 
 
     @Transactional
-    @CacheEvict(value = "patients", allEntries = true)
     public PatientDto updatePatient(UUID patientId, PatientDto dto) {
         Patient patient = patientRepository.findByPatientUuid(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
@@ -97,7 +96,7 @@ public class PatientService {
         return patientMapper.toDto(updated);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "patients")
     public List<PatientDto> findAll() {
         return patientMapper.toDtoList(patientRepository.findAll());
@@ -109,7 +108,7 @@ public class PatientService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "patients")
     public PatientDto findById(UUID patientId) {
         Patient patient = patientRepository.findByPatientUuid(patientId)

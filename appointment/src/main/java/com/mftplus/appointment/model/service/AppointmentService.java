@@ -68,7 +68,6 @@ public class AppointmentService {
     }
 
     @Transactional
-    @CacheEvict(value = "appointments", allEntries = true)
     public AppointmentDto update(UUID appointmentUuid, AppointmentDto appointmentDto) {
         if (appointmentDto == null) {
             throw new IllegalArgumentException("AppointmentDto cannot be null");
@@ -106,7 +105,7 @@ public class AppointmentService {
     @Cacheable(value = "appointments")
     public AppointmentDto getById(UUID id) {
         Appointment appointment = appointmentRepository.findByAppointmentUuid(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new RuntimeException("Appointment not found by uuid"));
         return appointmentMapper.toDto(appointment);
     }
 

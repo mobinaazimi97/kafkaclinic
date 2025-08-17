@@ -94,20 +94,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    @CacheEvict(value = "schedules", allEntries = true)
     public ScheduleDto update(UUID scheduleId, ScheduleDto scheduleDto) {
         Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));
         scheduleMapper.updateFromDto(scheduleDto, schedule);
         Schedule updated = scheduleRepository.save(schedule);
         return scheduleMapper.toDto(updated);
-    }
-
-    @CacheEvict(value = "schedules", allEntries = true)
-    public void logicalRemove(UUID scheduleId) {
-        Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
-                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));
-        scheduleRepository.logicalRemove(schedule.getScheduleId());
     }
 
     @Transactional(readOnly = true)
@@ -118,6 +110,7 @@ public class ScheduleService {
 
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "schedules")
     public ScheduleDto getById(UUID scheduleId) {
         Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));
@@ -132,6 +125,14 @@ public class ScheduleService {
         Long specializationId = specialization.getSpecializationId();
         List<Schedule> schedules = scheduleRepository.findAvailableSchedulesBySpecialization(specializationId);
         return scheduleMapper.toDtoList(schedules);
+    }
+
+    @Transactional
+    @CacheEvict(value = "schedules", allEntries = true)
+    public void logicalRemove(UUID scheduleId) {
+        Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));
+        scheduleRepository.logicalRemove(schedule.getScheduleId());
     }
 
 }

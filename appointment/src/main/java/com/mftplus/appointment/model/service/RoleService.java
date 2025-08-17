@@ -54,7 +54,6 @@ public class RoleService {
     }
 
     @Transactional
-    @CacheEvict(value = "roles", allEntries = true)
     public RoleDto update(UUID id, RoleDto roleDto) {
         Role role = roleRepository.findByRoleUuid(id).orElse(null);
         roleMapper.updateFromDto(roleDto, role);
@@ -78,8 +77,7 @@ public class RoleService {
         return roleMapper.toDto(role);
     }
 
-    @Transactional
-    @Cacheable(value = "roles")
+    @Transactional(readOnly = true)
     public RoleDto findByRoleName(String roleName) {
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new EntityNotFoundException("Role Not Found By Name "));
@@ -87,7 +85,6 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "roles")
     public Set<RoleDto> findByPermissionName(String permissionName) {
         Set<Role> roles = roleRepository.findByPermissions(permissionName);
         return roleMapper.toDtoSet(roles);

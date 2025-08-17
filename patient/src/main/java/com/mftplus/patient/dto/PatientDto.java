@@ -17,12 +17,13 @@ import java.util.UUID;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PatientDto {
+    //Appointment-data
     private UUID appointmentUuid;
+    private UUID scheduleId;
+    //-------------------------------------------------------------
     private UUID patientUuid;
     private LocalDateTime appointmentDateTime;
     private String notes;
-    private UUID scheduleId;
-
     private String firstName;
     private String lastName;
     private int age;

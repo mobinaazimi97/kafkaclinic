@@ -19,7 +19,7 @@ public class PatientController {
     private final PatientService patientService;
     private final AppointmentService appointmentService;
 
-    public PatientController(PatientService patientService,AppointmentService appointmentService) {
+    public PatientController(PatientService patientService, AppointmentService appointmentService) {
         this.patientService = patientService;
         this.appointmentService = appointmentService;
     }

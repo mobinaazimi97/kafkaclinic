@@ -1,6 +1,7 @@
 package com.mftplus.appointment.model.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mftplus.appointment.dto.AppointmentDto;
 import com.mftplus.appointment.model.entity.Appointment;
 import com.mftplus.appointment.model.entity.Schedule;
@@ -8,11 +9,15 @@ import com.mftplus.appointment.model.entity.Schedule;
 import com.mftplus.appointment.mapper.AppointmentMapper;
 import com.mftplus.appointment.model.repository.AppointmentRepository;
 import com.mftplus.appointment.model.repository.ScheduleRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +32,28 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
     private final ScheduleRepository scheduleRepository;
+    private final PatientService patientService;
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
+    private final ObjectMapper objectMapper;
+    private final AppointmentKafkaProducer appointmentKafkaProducer;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, ScheduleRepository scheduleRepository) {
+
+    public AppointmentService(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, ScheduleRepository scheduleRepository, PatientService patientService, ObjectMapper objectMapper, AppointmentKafkaProducer appointmentKafkaProducer) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
         this.scheduleRepository = scheduleRepository;
+        this.patientService = patientService;
+        this.objectMapper = objectMapper;
+        this.appointmentKafkaProducer = appointmentKafkaProducer;
     }
 
+
+    @PostConstruct
+    public void init() {
+        log.info("Initializing Appointment Cache On Startup");
+        getAll();
+        log.info("Appointment Cache Initialization Completed");
+    }
 
     @Transactional
     @CacheEvict(value = "appointments", allEntries = true)
@@ -43,6 +63,8 @@ public class AppointmentService {
         }
         if (appointmentDto.getAppointmentDateTime() == null && appointmentDto.getPersianStartDate() != null) {
             appointmentDto.setPersianStartDate(appointmentDto.getPersianStartDate());
+            appointmentDto.setDoctorFirstname(appointmentDto.getDoctorFirstname());
+            appointmentDto.setDoctorLastname(appointmentDto.getDoctorLastname());
         }
 
         Schedule schedule = scheduleRepository.findByScheduleUuid(appointmentDto.getScheduleId())
@@ -68,6 +90,7 @@ public class AppointmentService {
     }
 
     @Transactional
+    @CacheEvict(value = "appointments", allEntries = true)
     public AppointmentDto update(UUID appointmentUuid, AppointmentDto appointmentDto) {
         if (appointmentDto == null) {
             throw new IllegalArgumentException("AppointmentDto cannot be null");
@@ -102,16 +125,49 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "appointments")
+//    @Cacheable(value = "appointments", key = "#id")
     public AppointmentDto getById(UUID id) {
         Appointment appointment = appointmentRepository.findByAppointmentUuid(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found by uuid"));
         return appointmentMapper.toDto(appointment);
     }
 
+//    @Transactional(readOnly = true)
+//    @Cacheable(value = "appointments", key = "#patientId")
+//    public List<AppointmentDto> getByPatientId(UUID patientId) {
+//        return appointmentMapper.toDtoList(appointmentRepository.findByPatientUuid(patientId));
+//    }
+
     @Transactional(readOnly = true)
-    public List<AppointmentDto> getByPatientId(UUID patientId) {
-        return appointmentMapper.toDtoList(appointmentRepository.findByPatientUuid(patientId));
+    public ResponseEntity<?> getByPatientId(UUID patientId) {
+        AppointmentDto appointmentDto = null;
+        try {
+            ResponseEntity<AppointmentDto> response = patientService.getAppointmentsByPatientId(patientId);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                appointmentDto = response.getBody();
+                logger.debug("Found Patient Id {}", patientId);
+            } else {
+                logger.warn("Failed To Get Patient Id , Status :{}", response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.warn("Could Not Find Patient Id (service might be down): {}", e.getMessage());
+        }
+        if (appointmentDto == null) {
+            appointmentDto = new AppointmentDto();
+            appointmentDto.setAppointmentUuid(UUID.randomUUID());
+            appointmentDto.setPatientUuid(UUID.randomUUID());
+            logger.info("Created placeholder AppointmentDto for Patient {}", patientId);
+        }
+
+        try {
+//            String appointmentJson = objectMapper.writeValueAsString(appointmentDto);
+            appointmentKafkaProducer.sendData(appointmentDto);
+            logger.info("Appointment message sent to Kafka for PatientId {}: {}", patientId, appointmentDto);
+        } catch (Exception e) {
+            logger.error("Failed to send Appointment message to Kafka for patientId {}: {}", patientId, e.getMessage());
+        }
+        return ResponseEntity.ok(appointmentDto);
+
     }
 
     @Transactional

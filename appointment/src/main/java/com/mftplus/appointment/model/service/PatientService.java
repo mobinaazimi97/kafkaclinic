@@ -11,6 +11,9 @@ import java.util.UUID;
 
 @FeignClient(value = "patientService", url = "https://localhost:9443")
 public interface PatientService {
+//    @GetMapping("/patients/{patientId}")
+//    ResponseEntity<List<AppointmentDto>> getAppointmentsByPatientId(@PathVariable("patientId") UUID patientId);
+
     @GetMapping("/patients/{patientId}")
-    ResponseEntity<List<AppointmentDto>> getAppointmentsByPatientId(@PathVariable("patientId") UUID patientId);
+    ResponseEntity<AppointmentDto> getAppointmentsByPatientId(@PathVariable("patientId") UUID patientId);
 }

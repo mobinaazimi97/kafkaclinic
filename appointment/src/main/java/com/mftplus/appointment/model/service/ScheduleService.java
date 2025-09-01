@@ -94,6 +94,7 @@ public class ScheduleService {
     }
 
     @Transactional
+    @CacheEvict(value = "schedules", key = "#scheduleId")
     public ScheduleDto update(UUID scheduleId, ScheduleDto scheduleDto) {
         Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));
@@ -110,7 +111,7 @@ public class ScheduleService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "schedules")
+    @Cacheable(value = "schedules", key = "#scheduleId")
     public ScheduleDto getById(UUID scheduleId) {
         Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleId));

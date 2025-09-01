@@ -2,13 +2,20 @@ package com.mftplus.appointment.controller;
 
 import com.mftplus.appointment.dto.ScheduleDto;
 import com.mftplus.appointment.model.service.ScheduleService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/schedules")
 public class ScheduleController {
@@ -42,11 +49,27 @@ public class ScheduleController {
         return ResponseEntity.ok(schedule);
     }
 
-    @GetMapping("/spec/{specializationId}")
-    public ResponseEntity<List<ScheduleDto>> findAvailableSchedulesBySpecialization(@PathVariable UUID specializationId) {
-        List<ScheduleDto> scheduleDtos = scheduleService.findAvailableSchedulesBySpecialization(specializationId);
-        return ResponseEntity.ok(scheduleDtos);
+    @GetMapping("/specializations/{specializationId}")
+    public ResponseEntity<?> findAvailableSchedulesBySpecialization(@PathVariable("specializationId") UUID specializationId) {
+        try {
+            List<ScheduleDto> scheduleDtos = scheduleService.findAvailableSchedulesBySpecialization(specializationId);
 
+            if (scheduleDtos == null || scheduleDtos.isEmpty()) {
+                String reason = (scheduleDtos == null) ? "No data found (null returned)"
+                        : "No available schedules for this specialization";
+                Map<String, String> response = new HashMap<>();
+                response.put("message", reason);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            // اگر لیست پر بود، درست برگردون
+            return ResponseEntity.ok(scheduleDtos);
+
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
 

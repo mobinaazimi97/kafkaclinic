@@ -47,6 +47,7 @@ public class DoctorService {
     }
 
     @Transactional
+//    @CacheEvict(value = "doctors", key = "#doctorDto.doctorUuid")  // پاک کردن کش مربوط به همین دکتر
     @CacheEvict(value = "doctors", allEntries = true)
     public DoctorDto save(DoctorDto doctorDto) {
         Doctor doctor = doctorMapper.toEntity(doctorDto);
@@ -88,6 +89,8 @@ public class DoctorService {
     }
 
     @Transactional
+//    @CacheEvict(value = {"doctors", "schedules"}, key = "#doctorUuid")
+    @CacheEvict(value = "doctors", allEntries = true)
     public DoctorDto update(UUID doctorUuid, DoctorDto doctorDto) {
         Doctor doctor = doctorRepository.findByDoctorUuid(doctorUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found for UUID: " + doctorUuid));
@@ -107,6 +110,7 @@ public class DoctorService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "doctors", key = "#scheduleUuid")
     public DoctorDto findSchedule(UUID scheduleUuid) {
         Schedule schedule = scheduleRepository.findByScheduleUuid(scheduleUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + scheduleUuid));
@@ -121,13 +125,14 @@ public class DoctorService {
 
 
     @Transactional
-    @Cacheable(value = "doctors")
+    @Cacheable(value = "doctors", key = "#id")
     public DoctorDto findById(UUID id) {
         Doctor doctor = doctorRepository.findByDoctorUuid(id)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found for UUID: " + id));
         return doctorMapper.toDto(doctor);
     }
 
+    @Cacheable(value = "doctors", key = "T(java.util.Objects).hash(#doctorFirstname, #doctorLastname)")
     @Transactional(readOnly = true)
     public List<DoctorDto> findByDoctorName(String doctorFirstname, String doctorLastname) {
         List<Doctor> doctorList = doctorRepository.findByDoctorName(doctorFirstname, doctorLastname);
@@ -135,12 +140,14 @@ public class DoctorService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "doctors", key = "'specializations'")
     public List<DoctorDto> findSpecializations() {
         List<Doctor> doctorList = doctorRepository.findSpecializations();
         return doctorMapper.toDtoList(doctorList);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "doctors", key = "#doctorUuid")
     public DoctorDto getDoctorWithSpecializations(UUID doctorUuid) {
         Doctor doctor = doctorRepository.findByDoctorUuid(doctorUuid)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found with UUID: " + doctorUuid));
@@ -151,6 +158,7 @@ public class DoctorService {
         return doctorMapper.toDto(doctorWithSpecs);
     }
 
+    @Cacheable(value = "doctors", key = "#doctorUuid")
     @Transactional(readOnly = true)
     public DoctorDto getDoctorWithAvailableSchedules(UUID doctorUuid) {
         Doctor doctor = doctorRepository.findByDoctorUuid(doctorUuid)

@@ -28,6 +28,6 @@ public class ControllerAdvicer {
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.error("Unique constraint violation: {}", ex.getMostSpecificCause().getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Duplicate input!");
+                .body("Schedule IsBooked Or Duplicated Input!");
     }
 }

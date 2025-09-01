@@ -23,5 +23,5 @@ public interface SpecializationRepository extends JpaRepository<Specialization, 
     void logicalRemove(@Param("specializationId") Long specializationId);
 
     @Query("select sp from specializationEntity sp where sp.specializationUuid=:specializationUuid")
-    Optional<Specialization> findByUuId(UUID specializationUuid);
+    Optional<Specialization> findByUuId(@Param("specializationUuid")UUID specializationUuid);
 }

@@ -60,14 +60,14 @@ public class SpecializationService {
     }
 
     @Transactional
-    @Cacheable(value = "specializations")
+//    @Cacheable(value = "specializations")
     public SpecializationDto findById(UUID specializationId) {
         Specialization specialization = specializationRepository.findByUuId(specializationId).orElseThrow(() -> new EntityNotFoundException("Spec not found for UUID: " + specializationId));
         return specializationMapper.toDto(specialization);
     }
 
     @Transactional
-    @Cacheable(value = "specializations")
+    @Cacheable(value = "specializations", key = "#skillName")
     public List<SpecializationDto> findBySkillName(String skillName) {
         List<Specialization> specializations = specializationRepository.findBySkillName(skillName);
         return specializationMapper.toDtoList(specializations);

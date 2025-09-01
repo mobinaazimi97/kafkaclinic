@@ -31,6 +31,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
 
     @Query("select s from scheduleEntity s where s.scheduleUuid = :scheduleUuid")
-    Optional<Schedule> findByScheduleUuid(UUID scheduleUuid);
+    Optional<Schedule> findByScheduleUuid(@Param("scheduleUuid") UUID scheduleUuid);
 
 }

@@ -22,10 +22,10 @@ public interface AppointmentService {
     ResponseEntity<PatientDto> getAppointmentById(@PathVariable("appointmentId") UUID appointmentId);
 
     @GetMapping("/appointments/patients/{patientId}")
-    ResponseEntity<List<?>> getAppointmentsByPatientId(@PathVariable("patientId") UUID patientId);
+    ResponseEntity<?> getAppointmentsByPatientId(@PathVariable("patientId") UUID patientId);
 
     @GetMapping("/appointments/specializations/{specializationId}")
-    ResponseEntity<List<?>> findAvailableSchedulesBySpecializationInAppointment(@PathVariable UUID specializationId);
+    ResponseEntity<List<?>> findAvailableSchedulesBySpecializationInAppointment(@PathVariable("specializationId") UUID specializationId);
 
     @GetMapping("/appointments/specializations")
     ResponseEntity<List<?>> getAllSpec();

@@ -2,6 +2,7 @@ package com.mftplus.appointment.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.mfathi91.time.PersianDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,13 +36,25 @@ public class AppointmentDto {
     private UUID userUuid;
     private String username;
 
+    private String doctorFirstname;
+    private String doctorLastname;
+
 
     public String getPersianStartDate() {
+        if (appointmentDateTime == null) {
+            return null; // یا "" بسته به نیاز
+        }
         return PersianDate.fromGregorian(LocalDate.from(appointmentDateTime)).toString();
-
     }
 
     public void setPersianStartDate(String persianStartDate) {
-        this.appointmentDateTime = LocalDateTime.from(PersianDate.parse(persianStartDate).toGregorian());
+        if (persianStartDate == null || persianStartDate.isEmpty()) {
+            this.appointmentDateTime = null;
+            return;
+        }
+        this.appointmentDateTime = LocalDateTime.from(
+                PersianDate.parse(persianStartDate).toGregorian()
+        );
     }
+
 }

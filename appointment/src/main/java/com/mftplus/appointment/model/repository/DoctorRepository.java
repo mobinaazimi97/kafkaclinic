@@ -22,7 +22,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     @Query("select distinct d from doctorEntity d " +
             "join fetch d.schedules s " +
             "where s.scheduleId = :scheduleId")
-    Optional<Doctor> findSchedule(Long scheduleId);
+    Optional<Doctor> findSchedule(@Param("scheduleId") Long scheduleId);
 
     @Query("select distinct d from doctorEntity d join fetch d.schedules s where d.doctorId = :doctorId and s.isBooked = false")
     Optional<Doctor> findDoctorWithAvailableSchedules(@Param("doctorId") Long doctorId);
@@ -37,7 +37,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
 
     @Query("select d from doctorEntity d where d.doctorUuid=:doctorUuid")
-    Optional<Doctor>findByDoctorUuid(UUID doctorUuid);
+    Optional<Doctor>findByDoctorUuid(@Param("doctorUuid") UUID doctorUuid);
 
     @Modifying
     @Query("update doctorEntity d set d.deleted=true where d.doctorId= :doctorId")

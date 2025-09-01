@@ -46,20 +46,20 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDto> getById(@PathVariable UUID id) {
-        return ResponseEntity.ok(appointmentService.getById(id));
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<AppointmentDto> getById(@PathVariable("appointmentId") UUID appointmentId) {
+        return ResponseEntity.ok(appointmentService.getById(appointmentId));
     }
 
     @GetMapping("/patients/{patientId}")
-    public ResponseEntity<List<AppointmentDto>> getByPatientId(@PathVariable UUID patientId) {
+    public ResponseEntity<?> getByPatientId(@PathVariable("patientId") UUID patientId) {
         return ResponseEntity.ok(appointmentService.getByPatientId(patientId));
     }
 
 
     //For Make Short Path / Client cans see selected specialization on /appointments/*
     @GetMapping("/specializations/{specializationId}")
-    public ResponseEntity<List<ScheduleDto>> findAvailableSchedulesBySpecialization(@PathVariable UUID specializationId) {
+    public ResponseEntity<List<ScheduleDto>> findAvailableSchedulesBySpecialization(@PathVariable("specializationId") UUID specializationId) {
         List<ScheduleDto> scheduleDtos = scheduleService.findAvailableSchedulesBySpecialization(specializationId);
         return ResponseEntity.ok(scheduleDtos);
 

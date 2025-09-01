@@ -7,11 +7,11 @@ import com.mftplus.patient.model.entity.Patient;
 import com.mftplus.patient.model.repository.PatientRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Slf4j
 public class PatientService {
     private static final Logger logger = LoggerFactory.getLogger(PatientService.class);
     private final PatientRepository patientRepository;
@@ -39,9 +38,9 @@ public class PatientService {
 
     @PostConstruct
     public void init() {
-        log.info("Initializing patients Cache On Startup");
+        logger.info("Initializing patients Cache On Startup");
         findAll();
-        log.info("patients Cache Initialization Completed");
+        logger.info("patients Cache Initialization Completed");
     }
 
     @Transactional
@@ -87,6 +86,7 @@ public class PatientService {
 
 
     @Transactional
+    @CacheEvict(value = "patients", key = "#patientId")
     public PatientDto updatePatient(UUID patientId, PatientDto dto) {
         Patient patient = patientRepository.findByPatientUuid(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
@@ -102,14 +102,70 @@ public class PatientService {
         return patientMapper.toDtoList(patientRepository.findAll());
     }
 
+//    @Transactional(readOnly = true)
+//    public ResponseEntity<?> getByAppointmentId(UUID appointmentId) {
+//        try {
+//            appointmentService.getAppointmentById(appointmentId).getBody();
+//            if (appointmentService.getAppointmentById(appointmentId).getStatusCode().is2xxSuccessful() && appointmentService.getAppointmentById(appointmentId).getBody() != null) {
+//                appointmentId = (UUID) appointmentService.getAppointmentById(appointmentId).getBody();
+//                logger.debug("found appointment with ID: {}", appointmentId);
+//            } else {
+//                logger.warn("Failed to find appointment: Status {}", appointmentService.getAppointmentById(appointmentId));
+//            }
+//        } catch (Exception e) {
+//            logger.warn("Could not find appointment (service might be down): {}", e.getMessage());
+//        }
+//
+//        Object patientDto = appointmentService.getAppointmentById(appointmentId).getBody();
+//        try {
+//            String patientJson = objectMapper.writeValueAsString(patientMapper.toDto((Patient) patientDto));
+//            patientKafkaProducer.send(patientJson);
+//            logger.info("Patient message sent to Kafka For get AppointmentId : {}", patientJson);
+//        } catch (Exception e) {
+//            logger.error("Failed to send Patient message to Kafka For get AppointmentId: {}", e.getMessage());
+//        }
+//        return ResponseEntity.ok(patientDto);
+////        return patientMapper.toDtoList(patientRepository.findByAppointmentUuid(appointmentId));
+//    }
+
     @Transactional(readOnly = true)
-    public List<PatientDto> getByAppointmentId(UUID appointmentId) {
-        return patientMapper.toDtoList(patientRepository.findByAppointmentUuid(appointmentId));
+    public ResponseEntity<?> getByAppointmentId(UUID appointmentId) {
+        PatientDto patientDto = null;
+        try {
+            ResponseEntity<PatientDto> response = appointmentService.getAppointmentById(appointmentId);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                patientDto = response.getBody();
+                logger.debug("Found appointment with ID: {}", appointmentId);
+            } else {
+                logger.warn("Failed to find appointment: Status {}", response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.warn("Could not find appointment (service might be down): {}", e.getMessage());
+        }
+
+        if (patientDto == null) {
+            patientDto = new PatientDto();
+            patientDto.setPatientUuid(UUID.randomUUID());
+            patientDto.setAppointmentUuid(appointmentId);
+            logger.info("Created placeholder PatientDto for appointmentId {}", appointmentId);
+        }
+
+        try {
+            String patientJson = objectMapper.writeValueAsString(patientDto);
+            patientKafkaProducer.send(patientJson);
+            logger.info("Patient message sent to Kafka for appointmentId {}: {}", appointmentId, patientJson);
+        } catch (Exception e) {
+            logger.error("Failed to send Patient message to Kafka for appointmentId {}: {}", appointmentId, e.getMessage());
+        }
+
+        return ResponseEntity.ok(patientDto);
     }
 
 
+
     @Transactional
-    @Cacheable(value = "patients")
+    @Cacheable(value = "patients", key = "#patientId")
     public PatientDto findById(UUID patientId) {
         Patient patient = patientRepository.findByPatientUuid(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found with id: " + patientId));
@@ -117,7 +173,8 @@ public class PatientService {
         return patientMapper.toDto(patient);
     }
 
-    @Cacheable(value = "patients")
+    @Cacheable(value = "patients", key = "T(java.util.Objects).hash(#firstName, #lastName)")
+    @Transactional(readOnly = true)
     public PatientDto findByFullName(String firstName, String lastName) {
         Patient patient = patientRepository.findByFullName(firstName, lastName)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found with full name : "));

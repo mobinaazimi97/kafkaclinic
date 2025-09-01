@@ -44,13 +44,13 @@ public class PatientController {
     }
 
     @GetMapping("/{patientId}")
-    public ResponseEntity<PatientDto> getPatientById(@PathVariable UUID patientId) {
+    public ResponseEntity<PatientDto> getPatientById(@PathVariable("patientId") UUID patientId) {
         PatientDto dto = patientService.findById(patientId);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/myAppointments/{patientId}")
-    public ResponseEntity<PatientDto> getMyAppointments(@PathVariable UUID patientId) {
+    public ResponseEntity<PatientDto> getMyAppointments(@PathVariable("patientId") UUID patientId) {
         PatientDto dto = patientService.findById(patientId);
         return ResponseEntity.ok(dto);
     }
@@ -71,13 +71,13 @@ public class PatientController {
     // APPOINTMENT ACTIONS :
     //For Admins
     @GetMapping("/appointments/{appointmentId}")
-    public ResponseEntity<List<PatientDto>> getPatientsByAppointmentId(@PathVariable UUID appointmentId) {
+    public ResponseEntity<?> getPatientsByAppointmentId(@PathVariable("appointmentId") UUID appointmentId) {
         return ResponseEntity.ok(patientService.getByAppointmentId(appointmentId));
     }
 
     //Appointments Of This Patient*
     @GetMapping("/appointments/patients/{patientId}")
-    public ResponseEntity<List<?>> getPatientsByPatientId(@PathVariable UUID patientId) {
+    public ResponseEntity<?> getPatientsByPatientId(@PathVariable("patientId") UUID patientId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatientId(patientId).getBody());
     }
 
@@ -90,7 +90,7 @@ public class PatientController {
 
     //Patient can see and select special specialization :
     @GetMapping("/appointments/specializations/{specializationId}")
-    public ResponseEntity<List<?>> findAvailableSchedulesBySpecializationInAppointment(@PathVariable UUID specializationId) {
+    public ResponseEntity<List<?>> findAvailableSchedulesBySpecializationInAppointment(@PathVariable("specializationId") UUID specializationId) {
         return ResponseEntity.ok(appointmentService.findAvailableSchedulesBySpecializationInAppointment(specializationId).getBody());
     }
 

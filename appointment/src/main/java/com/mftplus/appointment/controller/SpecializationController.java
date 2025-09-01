@@ -35,12 +35,12 @@ public class SpecializationController {
     @GetMapping
     public ResponseEntity<List<SpecializationDto>> getAll() {
         List<SpecializationDto> specializationDtos = specializationService.findAll();
-        log.info("Found All Specializations" + specializationDtos);
+        log.info("Found All Specializations {}" , specializationDtos);
         return ResponseEntity.ok().body(specializationDtos);
     }
 
     @GetMapping("/{specializationId}")
-    public ResponseEntity<SpecializationDto> getSpecializationById(@PathVariable UUID specializationId) {
+    public ResponseEntity<SpecializationDto> getSpecializationById(@PathVariable("specializationId") UUID specializationId) {
         SpecializationDto specializationDto = specializationService.findById(specializationId);
         return ResponseEntity.ok().body(specializationDto);
     }

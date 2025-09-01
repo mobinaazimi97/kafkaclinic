@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mapper(
         config = CentralMapperConfig.class,
-        uses = {ScheduleMapper.class}
+        uses = {ScheduleMapper.class, DoctorMapper.class}
 )
 public interface AppointmentMapper {
 
@@ -20,6 +20,8 @@ public interface AppointmentMapper {
 
     @Mapping(source = "appointmentUuid", target = "appointmentUuid")
     @Mapping(source = "schedule.scheduleUuid", target = "scheduleId")
+    @Mapping(source = "schedule.doctor.doctorFirstname", target = "doctorFirstname")
+    @Mapping(source = "schedule.doctor.doctorLastname", target = "doctorLastname")
     @Mapping(source = "user.userUuid", target = "userUuid")
     @Mapping(source = "user.username", target = "username")
     @Mapping(source = "appointmentDateTime", target = "appointmentDateTime")

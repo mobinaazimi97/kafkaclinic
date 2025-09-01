@@ -55,6 +55,38 @@ public class AppointmentService {
         log.info("Appointment Cache Initialization Completed");
     }
 
+//    @Transactional
+//    @CacheEvict(value = "appointments", allEntries = true)
+//    public AppointmentDto create(AppointmentDto appointmentDto) {
+//        if (appointmentDto == null) {
+//            throw new IllegalArgumentException("AppointmentDto cannot be null");
+//        }
+//        if (appointmentDto.getAppointmentDateTime() == null && appointmentDto.getPersianStartDate() != null) {
+//            appointmentDto.setPersianStartDate(appointmentDto.getPersianStartDate());
+//        }
+//
+//        Schedule schedule = scheduleRepository.findByScheduleUuid(appointmentDto.getScheduleId())
+//                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + appointmentDto.getScheduleId()));
+//        if (schedule.isBooked()) {
+//            throw new IllegalStateException("Schedule is already booked");
+//        }
+//        boolean exists = appointmentRepository.existsByScheduleAndAppointmentDateTime(schedule, appointmentDto.getAppointmentDateTime());
+//        if (exists) {
+//            throw new DataIntegrityViolationException("This schedule is already booked at the given appointment date and time.");
+//        }
+//        Appointment appointment = appointmentMapper.toEntity(appointmentDto);
+//        appointment.setSchedule(schedule);
+//
+//        Appointment savedAppointment = appointmentRepository.save(appointment);
+//
+//        schedule.setBooked(true);
+//        scheduleRepository.save(schedule);
+//
+//        AppointmentDto resultDto = appointmentMapper.toDto(savedAppointment);
+//        resultDto.getPersianStartDate();
+//        return resultDto;
+//    }
+
     @Transactional
     @CacheEvict(value = "appointments", allEntries = true)
     public AppointmentDto create(AppointmentDto appointmentDto) {
@@ -63,12 +95,12 @@ public class AppointmentService {
         }
         if (appointmentDto.getAppointmentDateTime() == null && appointmentDto.getPersianStartDate() != null) {
             appointmentDto.setPersianStartDate(appointmentDto.getPersianStartDate());
-            appointmentDto.setDoctorFirstname(appointmentDto.getDoctorFirstname());
-            appointmentDto.setDoctorLastname(appointmentDto.getDoctorLastname());
         }
 
         Schedule schedule = scheduleRepository.findByScheduleUuid(appointmentDto.getScheduleId())
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with UUID: " + appointmentDto.getScheduleId()));
+        schedule.setDoctor(schedule.getDoctor());
+
         if (schedule.isBooked()) {
             throw new IllegalStateException("Schedule is already booked");
         }
@@ -88,6 +120,7 @@ public class AppointmentService {
         resultDto.getPersianStartDate();
         return resultDto;
     }
+
 
     @Transactional
     @CacheEvict(value = "appointments", allEntries = true)
@@ -156,6 +189,8 @@ public class AppointmentService {
             appointmentDto = new AppointmentDto();
             appointmentDto.setAppointmentUuid(UUID.randomUUID());
             appointmentDto.setPatientUuid(UUID.randomUUID());
+            appointmentDto.setDoctorFirstname(appointmentDto.getDoctorFirstname());
+            appointmentDto.setDoctorLastname(appointmentDto.getDoctorLastname());
             logger.info("Created placeholder AppointmentDto for Patient {}", patientId);
         }
 

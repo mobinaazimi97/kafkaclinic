@@ -48,6 +48,8 @@ public class PatientService {
     public PatientDto savePatient(PatientDto patientDto) {
         UUID patientId = patientDto.getPatientUuid() != null ? patientDto.getPatientUuid() : UUID.randomUUID();
         patientDto.setPatientUuid(patientId);
+        patientDto.setDoctorFirstname(patientDto.getDoctorFirstname());
+        patientDto.setDoctorLastname(patientDto.getDoctorLastname());
         logger.debug("Set patientId: {}", patientId);
 
         UUID appointmentId = null;
@@ -148,6 +150,17 @@ public class PatientService {
             patientDto = new PatientDto();
             patientDto.setPatientUuid(UUID.randomUUID());
             patientDto.setAppointmentUuid(appointmentId);
+
+            //todo
+            //------------------------------------------------------------
+            patientDto.setFirstName(patientDto.getFirstName());
+            patientDto.setLastName(patientDto.getLastName());
+            patientDto.setDoctorFirstname(patientDto.getDoctorFirstname());
+            patientDto.setDoctorLastname(patientDto.getDoctorLastname());
+            patientDto.setNotes(patientDto.getNotes());
+            patientDto.setPhone(patientDto.getPhone());
+            patientDto.setScheduleId(patientDto.getScheduleId());
+            //------------------------------------------------------------
             logger.info("Created placeholder PatientDto for appointmentId {}", appointmentId);
         }
 
@@ -163,9 +176,8 @@ public class PatientService {
     }
 
 
-
     @Transactional
-    @Cacheable(value = "patients", key = "#patientId")
+    @Cacheable(value = "patients")
     public PatientDto findById(UUID patientId) {
         Patient patient = patientRepository.findByPatientUuid(patientId)
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found with id: " + patientId));

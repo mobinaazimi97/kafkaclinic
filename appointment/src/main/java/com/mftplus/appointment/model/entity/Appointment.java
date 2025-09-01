@@ -27,10 +27,10 @@ public class Appointment extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "appointment_uuid", unique = true, nullable = false, updatable = false)
+    @Column(name = "appointment_uuid", nullable = false, updatable = false)
     private UUID appointmentUuid;
 
-    @Column(name = "patient_uuid", unique = true)
+    @Column(name = "patient_uuid")
     private UUID patientUuid;
 
     @Column(name = "patient_firstName")

@@ -28,6 +28,7 @@ public class AppointmentDto {
     private String notes;
     private UUID scheduleId;
 
+
     private String firstName;
     private String lastName;
     private int age;

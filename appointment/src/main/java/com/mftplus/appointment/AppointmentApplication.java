@@ -94,6 +94,8 @@ public class AppointmentApplication implements CommandLineRunner {
         scheduleDto .setEndDateTime(LocalDateTime.of(2025, 9, 12, 12, 30));
         scheduleDto.setAppointmentDurationMin(30);
         scheduleDto.setDoctorId(savedDoctor.getDoctorUuid());
+        scheduleDto.setDoctorFirstName(savedDoctor.getDoctorFirstname());
+        scheduleDto.setDoctorLastName(savedDoctor.getDoctorLastname());
         scheduleDto.setIsBooked(false);
         ScheduleDto savedSchedule = scheduleService.createSchedulesForDoctor(savedDoctor.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
         logger.info("Saved Schedule For Doctor : {}", savedSchedule);

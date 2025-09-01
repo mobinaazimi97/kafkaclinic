@@ -15,6 +15,8 @@ public interface PatientMapper {
     @Mapping(source = "patientUuid", target = "patientUuid")
     @Mapping(source = "patient.user.userUuid", target = "userUuid")
     @Mapping(source = "patient.user.username", target = "username")
+    @Mapping(source = "doctorFirstname", target = "doctorFirstname")
+    @Mapping(source = "doctorLastname", target = "doctorLastname")
     PatientDto toDto(Patient patient);
 
     @Mapping(source = "appointmentUuid", target = "appointmentUuid")

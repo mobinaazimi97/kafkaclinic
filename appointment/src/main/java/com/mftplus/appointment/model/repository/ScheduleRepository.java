@@ -1,5 +1,6 @@
 package com.mftplus.appointment.model.repository;
 
+import com.mftplus.appointment.model.entity.Doctor;
 import com.mftplus.appointment.model.entity.Schedule;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,5 +33,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s from scheduleEntity s where s.scheduleUuid = :scheduleUuid")
     Optional<Schedule> findByScheduleUuid(@Param("scheduleUuid") UUID scheduleUuid);
+
+//    @Query("select s from scheduleEntity s where s.scheduleUuid=:scheduleUuid and s.doctor.doctorFirstname like :doctorFirstname and s.doctor.doctorLastname like :doctorLastname")
+//    Schedule findByScheduleIdAndDoctor(@Param("scheduleUuid") UUID scheduleUuid,
+//                                       @Param("doctorFirstname") String doctorFirstName, @Param("doctorLastname") String doctorLastName);
 
 }

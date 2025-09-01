@@ -58,6 +58,12 @@ public class Patient extends Base {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private User user;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String doctorFirstname;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String doctorLastname;
+
     @PrePersist
     public void generateUUID() {
         if (patientUuid == null) {

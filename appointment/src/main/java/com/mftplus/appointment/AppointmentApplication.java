@@ -53,12 +53,25 @@ public class AppointmentApplication implements CommandLineRunner {
 //        SpecializationDto saved = specializationService.save(specializationDto);
 //        log.info("saved spec : {}", saved);
         SpecializationDto specializationDto = new SpecializationDto();
-        specializationDto.setSkillName("heart");
-        specializationDto.setDescription("heart spec");
+        specializationDto.setSkillName("قلب و عروق");
+        specializationDto.setDescription("about heart specialization");
         specializationDto.setDeleted(false);
         SpecializationDto saved = specializationService.save(specializationDto);
-        logger.info("saved spec : {}", saved);
+        logger.info("Saved Specialization 1 : {}", saved);
 
+        SpecializationDto specializationDto2 = new SpecializationDto();
+        specializationDto2.setSkillName("مغز و اعصاب");
+        specializationDto2.setDescription("about brain specialization");
+        specializationDto2.setDeleted(false);
+        SpecializationDto saved2 = specializationService.save(specializationDto2);
+        logger.info("Saved Specialization 2: {}", saved2);
+
+        SpecializationDto specializationDto3 = new SpecializationDto();
+        specializationDto3.setSkillName("پوست و مو");
+        specializationDto3.setDescription("about skin specialization");
+        specializationDto3.setDeleted(false);
+        SpecializationDto saved3 = specializationService.save(specializationDto3);
+        logger.info("Saved Specialization 3: {}", saved3);
 //----------------------------------------------------------------------------------------------
         //Doctor :
 //        DoctorDto doctorDto = DoctorDto.builder()
@@ -71,12 +84,30 @@ public class AppointmentApplication implements CommandLineRunner {
 //        log.info("doctor saved : {} ", savedDoctor);
 
         DoctorDto doctorDto = new DoctorDto();
-        doctorDto.setDoctorFirstname("alex");
-        doctorDto.setDoctorLastname("alx");
+        doctorDto.setDoctorFirstname("doctor-first-name 1");
+        doctorDto.setDoctorLastname("doctor-last-name   1");
         doctorDto.setExperienceYears(5);
         doctorDto.setSpecializations(List.of(saved));
         DoctorDto savedDoctor = doctorService.save(doctorDto);
-        logger.info("doctor saved : {} ", savedDoctor);
+        logger.info("doctor saved 1: {} ", savedDoctor);
+
+
+        DoctorDto doctorDto2 = new DoctorDto();
+        doctorDto2.setDoctorFirstname("doctor-first-name 2");
+        doctorDto2.setDoctorLastname("doctor-last-name   2");
+        doctorDto2.setExperienceYears(15);
+        doctorDto2.setSpecializations(List.of(saved2));
+        DoctorDto savedDoctor2 = doctorService.save(doctorDto2);
+        logger.info("doctor saved 2: {} ", savedDoctor2);
+
+
+        DoctorDto doctorDto3 = new DoctorDto();
+        doctorDto3.setDoctorFirstname("doctor-first-name 3");
+        doctorDto3.setDoctorLastname("doctor-last-name   3");
+        doctorDto3.setExperienceYears(20);
+        doctorDto3.setSpecializations(List.of(saved3));
+        DoctorDto savedDoctor3 = doctorService.save(doctorDto3);
+        logger.info("doctor saved 3: {} ", savedDoctor3);
 //----------------------------------------------------------------------------------------------
         //Schedule :
 //        ScheduleDto scheduleDto = ScheduleDto.builder()
@@ -90,8 +121,8 @@ public class AppointmentApplication implements CommandLineRunner {
 //        log.info("Saved Schedule For Doctor : {}", savedSchedule);
 
         ScheduleDto scheduleDto = new ScheduleDto();
-        scheduleDto.setStartDateTime(LocalDateTime.of(2025, 8, 30, 12, 30));
-        scheduleDto .setEndDateTime(LocalDateTime.of(2025, 9, 12, 12, 30));
+        scheduleDto.setStartDateTime(LocalDateTime.of(2025, 9, 11, 12, 30));
+        scheduleDto.setEndDateTime(LocalDateTime.of(2025, 9, 11, 18, 30));
         scheduleDto.setAppointmentDurationMin(30);
         scheduleDto.setDoctorId(savedDoctor.getDoctorUuid());
         scheduleDto.setDoctorFirstName(savedDoctor.getDoctorFirstname());
@@ -99,6 +130,30 @@ public class AppointmentApplication implements CommandLineRunner {
         scheduleDto.setIsBooked(false);
         ScheduleDto savedSchedule = scheduleService.createSchedulesForDoctor(savedDoctor.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
         logger.info("Saved Schedule For Doctor : {}", savedSchedule);
+
+
+        ScheduleDto scheduleDto2 = new ScheduleDto();
+        scheduleDto2.setStartDateTime(LocalDateTime.of(2025, 9, 10, 10, 30));
+        scheduleDto2.setEndDateTime(LocalDateTime.of(2025, 9, 10, 15, 30));
+        scheduleDto2.setAppointmentDurationMin(30);
+        scheduleDto2.setDoctorId(savedDoctor.getDoctorUuid());
+        scheduleDto2.setDoctorFirstName(savedDoctor.getDoctorFirstname());
+        scheduleDto2.setDoctorLastName(savedDoctor.getDoctorLastname());
+        scheduleDto2.setIsBooked(false);
+        ScheduleDto savedSchedule2 = scheduleService.createSchedulesForDoctor(savedDoctor2.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
+        logger.info("Saved Schedule For Doctor 2: {}", savedSchedule2);
+
+
+        ScheduleDto scheduleDto3 = new ScheduleDto();
+        scheduleDto3.setStartDateTime(LocalDateTime.of(2025, 9, 10, 10, 30));
+        scheduleDto3.setEndDateTime(LocalDateTime.of(2025, 9, 10, 17, 30));
+        scheduleDto3.setAppointmentDurationMin(30);
+        scheduleDto3.setDoctorId(savedDoctor.getDoctorUuid());
+        scheduleDto3.setDoctorFirstName(savedDoctor.getDoctorFirstname());
+        scheduleDto3.setDoctorLastName(savedDoctor.getDoctorLastname());
+        scheduleDto3.setIsBooked(false);
+        ScheduleDto savedSchedule3 = scheduleService.createSchedulesForDoctor(savedDoctor3.getDoctorUuid(), scheduleDto.getStartDateTime(), scheduleDto.getEndDateTime(), 30).get(0);
+        logger.info("Saved Schedule For Doctor 3: {}", savedSchedule3);
 
 //------------------------------------------------------------------------------------------------------------------------------
 //        PermissionDto permissionDto = PermissionDto.builder().permissionName("ACCESS-ALL").build(); //For Admin
